@@ -1,14 +1,10 @@
 package ai.fluent.fluentai.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import ai.fluent.fluentai.ChallengeProgress.ChallengeProgress;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -26,6 +22,9 @@ public class User {
     private String nativeLangId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<ChallengeProgress> challengeProgress;
 
     public User() {
     }
