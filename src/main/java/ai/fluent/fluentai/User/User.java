@@ -1,6 +1,7 @@
 package ai.fluent.fluentai.User;
 
 import ai.fluent.fluentai.ChallengeProgress.ChallengeProgress;
+import ai.fluent.fluentai.Language.Language;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -19,7 +20,11 @@ public class User {
     private String password;
     private String name;
     private String photoUrl;
-    private String nativeLangId;
+
+    @ManyToOne
+    @JoinColumn(name = "native_lang_id", nullable = false)
+    private Language nativeLang;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -30,16 +35,15 @@ public class User {
     }
 
     public User(String _username, String _email, String _password, String _name, String _photoUrl,
-            String _nativeLangId) {
+            Language _nativeLang) {
         this.username = _username;
         this.email = _email;
         this.password = _password;
         this.name = _name;
         this.photoUrl = _photoUrl;
-        this.nativeLangId = _nativeLangId;
+        this.nativeLang = _nativeLang;
     }
 
-    // Getters
     public Long getId() {
         return id;
     }
@@ -64,8 +68,8 @@ public class User {
         return photoUrl;
     }
 
-    public String getNativeLangId() {
-        return nativeLangId;
+    public Language getNativeLang() {
+        return nativeLang;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -76,7 +80,6 @@ public class User {
         return updatedAt;
     }
 
-    // Setters
     public void setId(Long _id) {
         this.id = _id;
     }
@@ -101,8 +104,8 @@ public class User {
         this.photoUrl = _photoUrl;
     }
 
-    public void setNativeLangId(String _nativeLangId) {
-        this.nativeLangId = _nativeLangId;
+    public void setNativeLang(Language _nativeLang) {
+        this.nativeLang = _nativeLang;
     }
 
     public void setCreatedAt(LocalDateTime _createdAt) {
@@ -113,7 +116,6 @@ public class User {
         this.updatedAt = _updatedAt;
     }
 
-    // toString
     @Override
     public String toString() {
         return "User{" +
@@ -123,13 +125,12 @@ public class User {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
-                ", nativeLangId='" + nativeLangId + '\'' +
+                ", nativeLang=" + nativeLang +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
 
-    // equals and hashCode
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -157,5 +158,4 @@ public class User {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 }

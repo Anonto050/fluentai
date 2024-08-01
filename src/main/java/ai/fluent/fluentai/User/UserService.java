@@ -32,7 +32,7 @@ public class UserService {
             user.setPassword(userDetails.getPassword());
             user.setName(userDetails.getName());
             user.setPhotoUrl(userDetails.getPhotoUrl());
-            user.setNativeLangId(userDetails.getNativeLangId());
+            user.setNativeLang(userDetails.getNativeLang());
             user.setUpdatedAt(LocalDateTime.now());
             return userRepository.save(user);
         });
