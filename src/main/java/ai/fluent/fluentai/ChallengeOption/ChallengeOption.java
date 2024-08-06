@@ -4,6 +4,8 @@ import ai.fluent.fluentai.Challenge.Challenge;
 import jakarta.persistence.*;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "challenge_options")
 public class ChallengeOption {
@@ -13,7 +15,8 @@ public class ChallengeOption {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "challenge_id", nullable = false)
+    @JsonBackReference
     private Challenge challenge;
 
     @Column(nullable = false)
@@ -43,8 +46,8 @@ public class ChallengeOption {
         return id;
     }
 
-    public void setId(Integer _id) {
-        this.id = _id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Challenge getChallenge() {

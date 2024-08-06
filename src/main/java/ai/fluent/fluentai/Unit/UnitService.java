@@ -1,7 +1,11 @@
 package ai.fluent.fluentai.Unit;
 
+import ai.fluent.fluentai.Course.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import ai.fluent.fluentai.Course.Course;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,33 +16,57 @@ public class UnitService {
     @Autowired
     private UnitRepository _unitRepository;
 
+    @Autowired
+    private CourseRepository _courseRepository;
+
     public List<Unit> getAllUnits() {
         return _unitRepository.findAll();
     }
 
-    public Unit createUnit(Unit _unit) {
-        return _unitRepository.save(_unit);
+    public Optional<Unit> createUnit(UnitDTO _unitDTO) {
+        System.out.println(_unitDTO);
+        Unit unit = new Unit();
+        Optional<Course> course = _courseRepository.findById(_unitDTO.getCourseId());
+        System.out.println(course);
+        if (course.isPresent()) {
+            System.out.println("Course is present");
+            unit.setTitle(_unitDTO.getTitle());
+            unit.setDescription(_unitDTO.getDescription());
+            unit.setOrder(_unitDTO.getOrder());
+            unit.setCourse(course.get());
+            System.out.println(unit);
+            return Optional.of(_unitRepository.save(unit));
+        }
+        return Optional.empty();
     }
 
-    public Optional<Unit> getUnitById(Integer _id) {
-        return _unitRepository.findById(_id);
+    public Optional<Unit> getUnitById(Integer id) {
+        return _unitRepository.findById(id);
     }
 
     public List<Unit> getUnitsByCourseId(Integer _courseId) {
         return _unitRepository.findByCourseId(_courseId);
     }
 
-    public Optional<Unit> updateUnit(Integer _id, Unit _unit) {
-        if (_unitRepository.existsById(_id)) {
-            _unit.setId(_id);
-            return Optional.of(_unitRepository.save(_unit));
+    public Optional<Unit> updateUnit(Integer id, UnitDTO _unitDTO) {
+        Optional<Unit> existingUnit = _unitRepository.findById(id);
+        if (existingUnit.isPresent()) {
+            Optional<Course> course = _courseRepository.findById(_unitDTO.getCourseId());
+            if (course.isPresent()) {
+                Unit unit = existingUnit.get();
+                unit.setTitle(_unitDTO.getTitle());
+                unit.setDescription(_unitDTO.getDescription());
+                unit.setOrder(_unitDTO.getOrder());
+                unit.setCourse(course.get());
+                return Optional.of(_unitRepository.save(unit));
+            }
         }
         return Optional.empty();
     }
 
-    public boolean deleteUnit(Integer _id) {
-        if (_unitRepository.existsById(_id)) {
-            _unitRepository.deleteById(_id);
+    public boolean deleteUnit(Integer id) {
+        if (_unitRepository.existsById(id)) {
+            _unitRepository.deleteById(id);
             return true;
         }
         return false;

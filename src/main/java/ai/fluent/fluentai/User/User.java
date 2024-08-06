@@ -6,6 +6,7 @@ import ai.fluent.fluentai.Language.Language;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "users")
@@ -13,7 +14,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String username;
     private String email;
@@ -23,6 +24,7 @@ public class User {
 
     @ManyToOne
     @JoinColumn(name = "native_lang_id", nullable = false)
+    @JsonIgnoreProperties("users")
     private Language nativeLang;
 
     private LocalDateTime createdAt;
@@ -44,7 +46,7 @@ public class User {
         this.nativeLang = _nativeLang;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -80,8 +82,8 @@ public class User {
         return updatedAt;
     }
 
-    public void setId(Long _id) {
-        this.id = _id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public void setUsername(String _username) {

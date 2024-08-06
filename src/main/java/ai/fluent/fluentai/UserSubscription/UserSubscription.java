@@ -7,19 +7,29 @@ import java.util.Objects;
 import ai.fluent.fluentai.User.User;
 
 @Entity
+@Table(name = "user_subscriptions")
 public class UserSubscription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @OneToOne
     private User user;
 
+    @Column(nullable = false)
     private String stripeCustomerId;
+
+    @Column(nullable = false)
     private String stripeSubscriptionId;
+
+    @Column(nullable = false)
     private String stripePriceId;
+
+    @Column(nullable = false)
     private LocalDateTime stripeCurrentPeriodEnd;
+
+    @Column(nullable = false)
     private boolean isActive;
 
     public UserSubscription() {
@@ -39,8 +49,8 @@ public class UserSubscription {
         return id;
     }
 
-    public void setId(int _id) {
-        this.id = _id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public User getUser() {

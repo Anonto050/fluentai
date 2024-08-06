@@ -25,22 +25,22 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Integer _id) {
-        return _courseService.getCourseById(_id)
+    public ResponseEntity<Course> getCourseById(@PathVariable Integer id) {
+        return _courseService.getCourseById(id)
                 .map(course -> new ResponseEntity<>(course, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> updateCourse(@PathVariable Integer _id, @RequestBody Course _course) {
-        return _courseService.updateCourse(_id, _course)
+    public ResponseEntity<Course> updateCourse(@PathVariable Integer id, @RequestBody Course _course) {
+        return _courseService.updateCourse(id, _course)
                 .map(updatedCourse -> new ResponseEntity<>(updatedCourse, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable Integer _id) {
-        if (_courseService.deleteCourse(_id)) {
+    public ResponseEntity<Void> deleteCourse(@PathVariable Integer id) {
+        if (_courseService.deleteCourse(id)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "units")
 public class Unit {
@@ -21,35 +24,34 @@ public class Unit {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    private Integer courseId;
-
     @Column(name = "unit_order", nullable = false)
     private Integer order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "courseId", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "course_id", nullable = false)
+    @JsonBackReference
     private Course course;
 
     @OneToMany(mappedBy = "unit", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Lesson> lessons;
 
     public Unit() {
     }
 
-    public Unit(String _title, String _description, Integer _courseId, Integer _order) {
+    public Unit(String _title, String _description, Integer _order, Course _course) {
         this.title = _title;
         this.description = _description;
-        this.courseId = _courseId;
         this.order = _order;
+        this.course = _course;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer _id) {
-        this.id = _id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -66,14 +68,6 @@ public class Unit {
 
     public void setDescription(String _description) {
         this.description = _description;
-    }
-
-    public Integer getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(Integer _courseId) {
-        this.courseId = _courseId;
     }
 
     public Integer getOrder() {
@@ -106,7 +100,6 @@ public class Unit {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", courseId=" + courseId +
                 ", order=" + order +
                 '}';
     }
@@ -121,12 +114,11 @@ public class Unit {
         return Objects.equals(id, unit.id) &&
                 Objects.equals(title, unit.title) &&
                 Objects.equals(description, unit.description) &&
-                Objects.equals(courseId, unit.courseId) &&
                 Objects.equals(order, unit.order);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, courseId, order);
+        return Objects.hash(id, title, description, order);
     }
 }

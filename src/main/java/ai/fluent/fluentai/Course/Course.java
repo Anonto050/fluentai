@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "courses")
 public class Course {
@@ -21,6 +23,7 @@ public class Course {
     private String imageSrc;
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Unit> units;
 
     public Course() {
@@ -35,8 +38,8 @@ public class Course {
         return id;
     }
 
-    public void setId(Integer _id) {
-        this.id = _id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getTitle() {

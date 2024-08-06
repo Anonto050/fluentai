@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "languages")
 public class Language {
@@ -16,7 +18,8 @@ public class Language {
 
     private String name;
 
-    @OneToMany(mappedBy = "nativeLang")
+    @OneToMany(mappedBy = "nativeLang", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<User> users;
 
     public Language() {
@@ -30,8 +33,8 @@ public class Language {
         return id;
     }
 
-    public void setId(int _id) {
-        this.id = _id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

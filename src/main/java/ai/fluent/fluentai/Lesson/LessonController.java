@@ -19,28 +19,32 @@ public class LessonController {
     }
 
     @PostMapping
-    public ResponseEntity<Lesson> createLesson(@RequestBody Lesson _lesson) {
-        return ResponseEntity.status(201).body(_lessonService.createLesson(_lesson));
+    public ResponseEntity<Lesson> createLesson(@RequestBody LessonDTO _lessonDTO) {
+        return _lessonService.createLesson(_lessonDTO)
+                .map(lesson -> ResponseEntity.ok(lesson))
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Lesson> getLessonById(@PathVariable Integer _id) {
-        return ResponseEntity.of(_lessonService.getLessonById(_id));
+    public ResponseEntity<Lesson> getLessonById(@PathVariable Integer id) {
+        return ResponseEntity.of(_lessonService.getLessonById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Lesson> updateLesson(@PathVariable Integer _id, @RequestBody Lesson _lesson) {
-        return ResponseEntity.of(_lessonService.updateLesson(_id, _lesson));
+    public ResponseEntity<Lesson> updateLesson(@PathVariable Integer id, @RequestBody LessonDTO _lessonDTO) {
+        return _lessonService.updateLesson(id, _lessonDTO)
+                .map(lesson -> ResponseEntity.ok(lesson))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLesson(@PathVariable Integer _id) {
-        return _lessonService.deleteLesson(_id) ? ResponseEntity.noContent().build()
+    public ResponseEntity<Void> deleteLesson(@PathVariable Integer id) {
+        return _lessonService.deleteLesson(id) ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}/percentage")
-    public ResponseEntity<Integer> getPercentageOfCompletedChallenges(@PathVariable Integer _id) {
-        return ResponseEntity.of(_lessonService.getPercentageOfCompletedChallenges(_id));
+    public ResponseEntity<Integer> getPercentageOfCompletedChallenges(@PathVariable Integer id) {
+        return ResponseEntity.of(_lessonService.getPercentageOfCompletedChallenges(id));
     }
 }

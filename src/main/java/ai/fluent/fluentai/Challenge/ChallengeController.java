@@ -19,28 +19,33 @@ public class ChallengeController {
     }
 
     @PostMapping
-    public ResponseEntity<Challenge> createChallenge(@RequestBody Challenge _challenge) {
-        return ResponseEntity.status(201).body(_challengeService.createChallenge(_challenge));
+    public ResponseEntity<Challenge> createChallenge(@RequestBody ChallengeDTO _challengeDTO) {
+        return _challengeService.createChallenge(_challengeDTO)
+                .map(challenge -> ResponseEntity.ok(challenge))
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Challenge> getChallengeById(@PathVariable Integer _id) {
-        return ResponseEntity.of(_challengeService.getChallengeById(_id));
+    public ResponseEntity<Challenge> getChallengeById(@PathVariable Integer id) {
+        return ResponseEntity.of(_challengeService.getChallengeById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Challenge> updateChallenge(@PathVariable Integer _id, @RequestBody Challenge _challenge) {
-        return ResponseEntity.of(_challengeService.updateChallenge(_id, _challenge));
+    public ResponseEntity<Challenge> updateChallenge(@PathVariable Integer id,
+            @RequestBody ChallengeDTO _challengeDTO) {
+        return _challengeService.updateChallenge(id, _challengeDTO)
+                .map(challenge -> ResponseEntity.ok(challenge))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChallenge(@PathVariable Integer _id) {
-        return _challengeService.deleteChallenge(_id) ? ResponseEntity.noContent().build()
+    public ResponseEntity<Void> deleteChallenge(@PathVariable Integer id) {
+        return _challengeService.deleteChallenge(id) ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}/percentage")
-    public ResponseEntity<Integer> getPercentageOfCompletedChallenges(@PathVariable Integer _id) {
-        return ResponseEntity.of(_challengeService.getPercentageOfCompletedChallenges(_id));
+    public ResponseEntity<Integer> getPercentageOfCompletedChallenges(@PathVariable Integer id) {
+        return ResponseEntity.of(_challengeService.getPercentageOfCompletedChallenges(id));
     }
 }

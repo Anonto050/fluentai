@@ -1,8 +1,8 @@
-package ai.fluent.fluentai.User;
+package ai.fluent.fluentai.UserProgress;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserProgressRepository extends JpaRepository<UserProgress, Integer> {
 }

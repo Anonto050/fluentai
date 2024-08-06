@@ -1,6 +1,6 @@
 package ai.fluent.fluentai.Lesson;
 
-import ai.fluent.fluentai.Unit.UnitRepository;
+import ai.fluent.fluentai.Unit.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,36 +21,46 @@ public class LessonService {
         return _lessonRepository.findAll();
     }
 
-    public Lesson createLesson(Lesson _lesson) {
-        // Ensure that the Unit exists before creating a Lesson
-        if (_unitRepository.existsById(_lesson.getUnit().getId())) {
-            return _lessonRepository.save(_lesson);
-        } else {
-            throw new IllegalArgumentException("Unit does not exist.");
-        }
-    }
-
-    public Optional<Lesson> getLessonById(Integer _id) {
-        return _lessonRepository.findById(_id);
-    }
-
-    public Optional<Lesson> updateLesson(Integer _id, Lesson _lesson) {
-        if (_lessonRepository.existsById(_id)) {
-            _lesson.setId(_id);
-            return Optional.of(_lessonRepository.save(_lesson));
+    public Optional<Lesson> createLesson(LessonDTO _lessonDTO) {
+        Optional<Unit> unit = _unitRepository.findById(_lessonDTO.getUnitId());
+        if (unit.isPresent()) {
+            Lesson lesson = new Lesson();
+            lesson.setTitle(_lessonDTO.getTitle());
+            lesson.setOrder(_lessonDTO.getOrder());
+            lesson.setUnit(unit.get());
+            return Optional.of(_lessonRepository.save(lesson));
         }
         return Optional.empty();
     }
 
-    public boolean deleteLesson(Integer _id) {
-        if (_lessonRepository.existsById(_id)) {
-            _lessonRepository.deleteById(_id);
+    public Optional<Lesson> getLessonById(Integer id) {
+        return _lessonRepository.findById(id);
+    }
+
+    public Optional<Lesson> updateLesson(Integer id, LessonDTO _lessonDTO) {
+        Optional<Lesson> existingLesson = _lessonRepository.findById(id);
+        if (existingLesson.isPresent()) {
+            Optional<Unit> unit = _unitRepository.findById(_lessonDTO.getUnitId());
+            if (unit.isPresent()) {
+                Lesson lesson = existingLesson.get();
+                lesson.setTitle(_lessonDTO.getTitle());
+                lesson.setOrder(_lessonDTO.getOrder());
+                lesson.setUnit(unit.get());
+                return Optional.of(_lessonRepository.save(lesson));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public boolean deleteLesson(Integer id) {
+        if (_lessonRepository.existsById(id)) {
+            _lessonRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    public Optional<Integer> getPercentageOfCompletedChallenges(Integer _id) {
+    public Optional<Integer> getPercentageOfCompletedChallenges(Integer id) {
         // This method would calculate the percentage of completed challenges
         // Assuming the Challenge entity and its repository exist
         // Placeholder logic, update as needed

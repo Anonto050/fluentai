@@ -1,10 +1,10 @@
 package ai.fluent.fluentai.ChallengeProgress;
 
-import ai.fluent.fluentai.Challenge.Challenge;
 import ai.fluent.fluentai.User.User;
-
+import ai.fluent.fluentai.Challenge.Challenge;
 import jakarta.persistence.*;
-import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "challenge_progress")
@@ -14,12 +14,13 @@ public class ChallengeProgress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "challenge_id", nullable = false, insertable = false, updatable = false)
+    @ManyToOne
+    @JoinColumn(name = "challenge_id", nullable = false)
+    @JsonBackReference
     private Challenge challenge;
 
     @Column(nullable = false)
@@ -34,63 +35,36 @@ public class ChallengeProgress {
         this.completed = _completed;
     }
 
+    // Getters and Setters
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer _id) {
-        this.id = _id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setUser(User _user) {
-        this.user = _user;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Challenge getChallenge() {
         return challenge;
     }
 
-    public void setChallenge(Challenge _challenge) {
-        this.challenge = _challenge;
+    public void setChallenge(Challenge challenge) {
+        this.challenge = challenge;
     }
 
     public Boolean getCompleted() {
         return completed;
     }
 
-    public void setCompleted(Boolean _completed) {
-        this.completed = _completed;
-    }
-
-    @Override
-    public boolean equals(Object _o) {
-        if (this == _o)
-            return true;
-        if (_o == null || getClass() != _o.getClass())
-            return false;
-        ChallengeProgress that = (ChallengeProgress) _o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(user, that.user) &&
-                Objects.equals(challenge, that.challenge) &&
-                Objects.equals(completed, that.completed);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, user, challenge, completed);
-    }
-
-    @Override
-    public String toString() {
-        return "ChallengeProgress{" +
-                "id=" + id +
-                ", user=" + user +
-                ", challenge=" + challenge +
-                ", completed=" + completed +
-                '}';
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
     }
 }

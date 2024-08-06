@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "lessons")
 public class Lesson {
@@ -19,13 +22,15 @@ public class Lesson {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "unit_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "unit_id", nullable = false)
+    @JsonBackReference
     private Unit unit;
 
     @Column(name = "lesson_order", nullable = false)
     private Integer order;
 
     @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Challenge> challenges;
 
     public Lesson() {
@@ -41,8 +46,8 @@ public class Lesson {
         return id;
     }
 
-    public void setId(Integer _id) {
-        this.id = _id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getTitle() {

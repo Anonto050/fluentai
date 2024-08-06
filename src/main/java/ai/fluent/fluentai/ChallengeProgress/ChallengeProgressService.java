@@ -1,7 +1,7 @@
 package ai.fluent.fluentai.ChallengeProgress;
 
-import ai.fluent.fluentai.Challenge.ChallengeRepository;
-import ai.fluent.fluentai.User.UserRepository;
+import ai.fluent.fluentai.Challenge.*;
+import ai.fluent.fluentai.User.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,45 +13,41 @@ import java.util.Optional;
 public class ChallengeProgressService {
 
     @Autowired
-    private ChallengeProgressRepository _challengeProgressRepository;
+    private ChallengeProgressRepository challengeProgressRepository;
 
     @Autowired
-    private ChallengeRepository _challengeRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRepository _userRepository;
+    private ChallengeRepository challengeRepository;
+
+    public ChallengeProgress createChallengeProgress(ChallengeProgressDTO challengeProgressDTO) {
+        User user = userRepository.findById(challengeProgressDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Challenge challenge = challengeRepository.findById(challengeProgressDTO.getChallengeId())
+                .orElseThrow(() -> new RuntimeException("Challenge not found"));
+
+        ChallengeProgress challengeProgress = new ChallengeProgress(user, challenge,
+                challengeProgressDTO.getCompleted());
+        return challengeProgressRepository.save(challengeProgress);
+    }
+
+    public Optional<ChallengeProgress> updateChallengeProgress(Integer id, ChallengeProgressDTO challengeProgressDTO) {
+        return challengeProgressRepository.findById(id).map(challengeProgress -> {
+            challengeProgress.setCompleted(challengeProgressDTO.getCompleted());
+            return challengeProgressRepository.save(challengeProgress);
+        });
+    }
+
+    public void deleteChallengeProgress(Integer id) {
+        challengeProgressRepository.deleteById(id);
+    }
+
+    public Optional<ChallengeProgress> getChallengeProgressById(Integer id) {
+        return challengeProgressRepository.findById(id);
+    }
 
     public List<ChallengeProgress> getAllChallengeProgress() {
-        return _challengeProgressRepository.findAll();
-    }
-
-    public ChallengeProgress createChallengeProgress(ChallengeProgress _challengeProgress) {
-        // Ensure that the Challenge and User exist before creating ChallengeProgress
-        if (_challengeRepository.existsById(_challengeProgress.getChallenge().getId()) &&
-                _userRepository.existsById(_challengeProgress.getUser().getId())) {
-            return _challengeProgressRepository.save(_challengeProgress);
-        } else {
-            throw new IllegalArgumentException("Challenge or User does not exist.");
-        }
-    }
-
-    public Optional<ChallengeProgress> getChallengeProgressById(Integer _id) {
-        return _challengeProgressRepository.findById(_id);
-    }
-
-    public Optional<ChallengeProgress> updateChallengeProgress(Integer _id, ChallengeProgress _challengeProgress) {
-        if (_challengeProgressRepository.existsById(_id)) {
-            _challengeProgress.setId(_id);
-            return Optional.of(_challengeProgressRepository.save(_challengeProgress));
-        }
-        return Optional.empty();
-    }
-
-    public boolean deleteChallengeProgress(Integer _id) {
-        if (_challengeProgressRepository.existsById(_id)) {
-            _challengeProgressRepository.deleteById(_id);
-            return true;
-        }
-        return false;
+        return challengeProgressRepository.findAll();
     }
 }

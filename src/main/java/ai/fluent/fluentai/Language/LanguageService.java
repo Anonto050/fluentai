@@ -16,23 +16,23 @@ public class LanguageService {
         return languageRepository.findAll();
     }
 
-    public Optional<Language> getLanguageById(int _id) {
-        return languageRepository.findById(_id);
+    public Optional<Language> getLanguageById(int id) {
+        return languageRepository.findById(id);
     }
 
     public Language addLanguage(Language _language) {
         return languageRepository.save(_language);
     }
 
-    public boolean deleteLanguage(int _id) {
-        return languageRepository.findById(_id).map(language -> {
+    public boolean deleteLanguage(int id) {
+        return languageRepository.findById(id).map(language -> {
             languageRepository.delete(language);
             return true;
         }).orElse(false);
     }
 
-    public Optional<Language> updateLanguage(int _id, Language _language) {
-        return languageRepository.findById(_id).map(existingLanguage -> {
+    public Optional<Language> updateLanguage(int id, Language _language) {
+        return languageRepository.findById(id).map(existingLanguage -> {
             existingLanguage.setName(_language.getName());
             return languageRepository.save(existingLanguage);
         });

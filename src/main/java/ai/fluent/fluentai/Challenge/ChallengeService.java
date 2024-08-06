@@ -1,6 +1,6 @@
 package ai.fluent.fluentai.Challenge;
 
-import ai.fluent.fluentai.Lesson.LessonRepository;
+import ai.fluent.fluentai.Lesson.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,36 +21,48 @@ public class ChallengeService {
         return _challengeRepository.findAll();
     }
 
-    public Challenge createChallenge(Challenge _challenge) {
-        // Ensure that the Lesson exists before creating a Challenge
-        if (_lessonRepository.existsById(_challenge.getLesson().getId())) {
-            return _challengeRepository.save(_challenge);
-        } else {
-            throw new IllegalArgumentException("Lesson does not exist.");
-        }
-    }
-
-    public Optional<Challenge> getChallengeById(Integer _id) {
-        return _challengeRepository.findById(_id);
-    }
-
-    public Optional<Challenge> updateChallenge(Integer _id, Challenge _challenge) {
-        if (_challengeRepository.existsById(_id)) {
-            _challenge.setId(_id);
-            return Optional.of(_challengeRepository.save(_challenge));
+    public Optional<Challenge> createChallenge(ChallengeDTO _challengeDTO) {
+        Optional<Lesson> lesson = _lessonRepository.findById(_challengeDTO.getLessonId());
+        if (lesson.isPresent()) {
+            Challenge challenge = new Challenge();
+            challenge.setType(_challengeDTO.getType());
+            challenge.setQuestion(_challengeDTO.getQuestion());
+            challenge.setOrder(_challengeDTO.getOrder());
+            challenge.setLesson(lesson.get());
+            return Optional.of(_challengeRepository.save(challenge));
         }
         return Optional.empty();
     }
 
-    public boolean deleteChallenge(Integer _id) {
-        if (_challengeRepository.existsById(_id)) {
-            _challengeRepository.deleteById(_id);
+    public Optional<Challenge> getChallengeById(Integer id) {
+        return _challengeRepository.findById(id);
+    }
+
+    public Optional<Challenge> updateChallenge(Integer id, ChallengeDTO _challengeDTO) {
+        Optional<Challenge> existingChallenge = _challengeRepository.findById(id);
+        if (existingChallenge.isPresent()) {
+            Optional<Lesson> lesson = _lessonRepository.findById(_challengeDTO.getLessonId());
+            if (lesson.isPresent()) {
+                Challenge challenge = existingChallenge.get();
+                challenge.setType(_challengeDTO.getType());
+                challenge.setQuestion(_challengeDTO.getQuestion());
+                challenge.setOrder(_challengeDTO.getOrder());
+                challenge.setLesson(lesson.get());
+                return Optional.of(_challengeRepository.save(challenge));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public boolean deleteChallenge(Integer id) {
+        if (_challengeRepository.existsById(id)) {
+            _challengeRepository.deleteById(id);
             return true;
         }
         return false;
     }
 
-    public Optional<Integer> getPercentageOfCompletedChallenges(Integer _id) {
+    public Optional<Integer> getPercentageOfCompletedChallenges(Integer id) {
         // This method would calculate the percentage of completed challenges
         // Placeholder logic, update as needed
         return Optional.of(0); // Replace with actual logic

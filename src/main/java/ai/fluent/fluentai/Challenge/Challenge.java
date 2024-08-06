@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "challenges")
 public class Challenge {
@@ -16,7 +19,8 @@ public class Challenge {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lesson_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "lesson_id", nullable = false)
+    @JsonBackReference
     private Lesson lesson;
 
     @Enumerated(EnumType.STRING)
@@ -30,9 +34,11 @@ public class Challenge {
     private Integer order;
 
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ChallengeOption> challengeOptions;
 
     @OneToMany(mappedBy = "challenge", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ChallengeProgress> challengeProgress;
 
     public Challenge() {
@@ -49,8 +55,8 @@ public class Challenge {
         return id;
     }
 
-    public void setId(Integer _id) {
-        this.id = _id;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Lesson getLesson() {
@@ -134,4 +140,5 @@ public class Challenge {
     public enum ChallengeType {
         SELECT, ASSIST
     }
+
 }

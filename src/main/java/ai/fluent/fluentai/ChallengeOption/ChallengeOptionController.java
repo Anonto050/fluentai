@@ -5,38 +5,64 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/challenge-options")
 public class ChallengeOptionController {
 
-    @Autowired
-    private ChallengeOptionService _challengeOptionService;
+        @Autowired
+        private ChallengeOptionService challengeOptionService;
 
-    @GetMapping
-    public List<ChallengeOption> getAllChallengeOptions() {
-        return _challengeOptionService.getAllChallengeOptions();
-    }
+        @PostMapping
+        public ResponseEntity<ChallengeOption> createChallengeOption(
+                        @RequestBody ChallengeOptionDTO challengeOptionDTO) {
+                return challengeOptionService.createChallengeOption(challengeOptionDTO)
+                                .map(challengeOption -> ResponseEntity.ok(challengeOption))
+                                .orElse(ResponseEntity.badRequest().build());
+        }
 
-    @PostMapping
-    public ResponseEntity<ChallengeOption> createChallengeOption(@RequestBody ChallengeOption _challengeOption) {
-        return ResponseEntity.status(201).body(_challengeOptionService.createChallengeOption(_challengeOption));
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<ChallengeOption> updateChallengeOption(@PathVariable Integer id,
+                        @RequestBody ChallengeOptionDTO challengeOptionDTO) {
+                return challengeOptionService.updateChallengeOption(id, challengeOptionDTO)
+                                .map(challengeOption -> ResponseEntity.ok(challengeOption))
+                                .orElse(ResponseEntity.notFound().build());
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ChallengeOption> getChallengeOptionById(@PathVariable Integer _id) {
-        return ResponseEntity.of(_challengeOptionService.getChallengeOptionById(_id));
-    }
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteChallengeOption(@PathVariable Integer id) {
+                return challengeOptionService.deleteChallengeOption(id) ? ResponseEntity.noContent().build()
+                                : ResponseEntity.notFound().build();
+        }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ChallengeOption> updateChallengeOption(@PathVariable Integer _id,
-            @RequestBody ChallengeOption _challengeOption) {
-        return ResponseEntity.of(_challengeOptionService.updateChallengeOption(_id, _challengeOption));
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<ChallengeOptionDTO> getChallengeOptionById(@PathVariable Integer id) {
+                return challengeOptionService.getChallengeOptionById(id)
+                                .map(challengeOption -> {
+                                        ChallengeOptionDTO dto = new ChallengeOptionDTO(
+                                                        challengeOption.getChallenge().getId(),
+                                                        challengeOption.getText(),
+                                                        challengeOption.getCorrect(),
+                                                        challengeOption.getImageSrc(),
+                                                        challengeOption.getAudioSrc());
+                                        dto.setId(challengeOption.getId());
+                                        return ResponseEntity.ok(dto);
+                                })
+                                .orElse(ResponseEntity.notFound().build());
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChallengeOption(@PathVariable Integer _id) {
-        return _challengeOptionService.deleteChallengeOption(_id) ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
-    }
+        @GetMapping
+        public ResponseEntity<List<ChallengeOptionDTO>> getAllChallengeOptions() {
+                List<ChallengeOption> challengeOptions = challengeOptionService.getAllChallengeOptions();
+                List<ChallengeOptionDTO> dtos = challengeOptions.stream()
+                                .map(co -> new ChallengeOptionDTO(
+                                                co.getChallenge().getId(),
+                                                co.getText(),
+                                                co.getCorrect(),
+                                                co.getImageSrc(),
+                                                co.getAudioSrc()))
+                                .collect(Collectors.toList());
+                return ResponseEntity.ok(dtos);
+        }
 }

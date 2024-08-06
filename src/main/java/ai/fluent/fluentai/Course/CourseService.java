@@ -20,21 +20,21 @@ public class CourseService {
         return _courseRepository.save(_course);
     }
 
-    public Optional<Course> getCourseById(Integer _id) {
-        return _courseRepository.findById(_id);
+    public Optional<Course> getCourseById(Integer id) {
+        return _courseRepository.findById(id);
     }
 
-    public Optional<Course> updateCourse(Integer _id, Course _course) {
-        if (_courseRepository.existsById(_id)) {
-            _course.setId(_id);
+    public Optional<Course> updateCourse(Integer id, Course _course) {
+        if (_courseRepository.existsById(id)) {
+            _course.setId(id);
             return Optional.of(_courseRepository.save(_course));
         }
         return Optional.empty();
     }
 
-    public boolean deleteCourse(Integer _id) {
-        if (_courseRepository.existsById(_id)) {
-            _courseRepository.deleteById(_id);
+    public boolean deleteCourse(Integer id) {
+        if (_courseRepository.existsById(id)) {
+            _courseRepository.deleteById(id);
             return true;
         }
         return false;

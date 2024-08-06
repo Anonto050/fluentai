@@ -20,13 +20,15 @@ public class UnitController {
     }
 
     @PostMapping
-    public ResponseEntity<Unit> createUnit(@RequestBody Unit _unit) {
-        return new ResponseEntity<>(_unitService.createUnit(_unit), HttpStatus.CREATED);
+    public ResponseEntity<Unit> createUnit(@RequestBody UnitDTO _unitDTO) {
+        return _unitService.createUnit(_unitDTO)
+                .map(unit -> new ResponseEntity<>(unit, HttpStatus.CREATED))
+                .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Unit> getUnitById(@PathVariable Integer _id) {
-        return _unitService.getUnitById(_id)
+    public ResponseEntity<Unit> getUnitById(@PathVariable Integer id) {
+        return _unitService.getUnitById(id)
                 .map(unit -> new ResponseEntity<>(unit, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -37,15 +39,15 @@ public class UnitController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Unit> updateUnit(@PathVariable Integer _id, @RequestBody Unit _unit) {
-        return _unitService.updateUnit(_id, _unit)
+    public ResponseEntity<Unit> updateUnit(@PathVariable Integer id, @RequestBody UnitDTO _unitDTO) {
+        return _unitService.updateUnit(id, _unitDTO)
                 .map(updatedUnit -> new ResponseEntity<>(updatedUnit, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUnit(@PathVariable Integer _id) {
-        if (_unitService.deleteUnit(_id)) {
+    public ResponseEntity<Void> deleteUnit(@PathVariable Integer id) {
+        if (_unitService.deleteUnit(id)) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

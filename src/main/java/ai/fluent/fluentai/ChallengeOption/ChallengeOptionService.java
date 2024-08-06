@@ -1,6 +1,6 @@
 package ai.fluent.fluentai.ChallengeOption;
 
-import ai.fluent.fluentai.Challenge.ChallengeRepository;
+import ai.fluent.fluentai.Challenge.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,30 +21,44 @@ public class ChallengeOptionService {
         return _challengeOptionRepository.findAll();
     }
 
-    public ChallengeOption createChallengeOption(ChallengeOption _challengeOption) {
-        // Ensure that the Challenge exists before creating a ChallengeOption
-        if (_challengeRepository.existsById(_challengeOption.getChallenge().getId())) {
-            return _challengeOptionRepository.save(_challengeOption);
-        } else {
-            throw new IllegalArgumentException("Challenge does not exist.");
-        }
-    }
-
-    public Optional<ChallengeOption> getChallengeOptionById(Integer _id) {
-        return _challengeOptionRepository.findById(_id);
-    }
-
-    public Optional<ChallengeOption> updateChallengeOption(Integer _id, ChallengeOption _challengeOption) {
-        if (_challengeOptionRepository.existsById(_id)) {
-            _challengeOption.setId(_id);
-            return Optional.of(_challengeOptionRepository.save(_challengeOption));
+    public Optional<ChallengeOption> createChallengeOption(ChallengeOptionDTO _challengeOptionDTO) {
+        Optional<Challenge> challenge = _challengeRepository.findById(_challengeOptionDTO.getChallengeId());
+        if (challenge.isPresent()) {
+            ChallengeOption challengeOption = new ChallengeOption();
+            challengeOption.setChallenge(challenge.get());
+            challengeOption.setText(_challengeOptionDTO.getText());
+            challengeOption.setCorrect(_challengeOptionDTO.getCorrect());
+            challengeOption.setImageSrc(_challengeOptionDTO.getImageSrc());
+            challengeOption.setAudioSrc(_challengeOptionDTO.getAudioSrc());
+            return Optional.of(_challengeOptionRepository.save(challengeOption));
         }
         return Optional.empty();
     }
 
-    public boolean deleteChallengeOption(Integer _id) {
-        if (_challengeOptionRepository.existsById(_id)) {
-            _challengeOptionRepository.deleteById(_id);
+    public Optional<ChallengeOption> getChallengeOptionById(Integer id) {
+        return _challengeOptionRepository.findById(id);
+    }
+
+    public Optional<ChallengeOption> updateChallengeOption(Integer id, ChallengeOptionDTO _challengeOptionDTO) {
+        Optional<ChallengeOption> existingChallengeOption = _challengeOptionRepository.findById(id);
+        if (existingChallengeOption.isPresent()) {
+            Optional<Challenge> challenge = _challengeRepository.findById(_challengeOptionDTO.getChallengeId());
+            if (challenge.isPresent()) {
+                ChallengeOption challengeOption = existingChallengeOption.get();
+                challengeOption.setChallenge(challenge.get());
+                challengeOption.setText(_challengeOptionDTO.getText());
+                challengeOption.setCorrect(_challengeOptionDTO.getCorrect());
+                challengeOption.setImageSrc(_challengeOptionDTO.getImageSrc());
+                challengeOption.setAudioSrc(_challengeOptionDTO.getAudioSrc());
+                return Optional.of(_challengeOptionRepository.save(challengeOption));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public boolean deleteChallengeOption(Integer id) {
+        if (_challengeOptionRepository.existsById(id)) {
+            _challengeOptionRepository.deleteById(id);
             return true;
         }
         return false;
