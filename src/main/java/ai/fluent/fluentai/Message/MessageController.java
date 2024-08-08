@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/v1/messages")
 public class MessageController {
 
