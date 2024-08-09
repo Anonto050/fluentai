@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(exposedHeaders = "content-range")
 @RequestMapping("/v1/challenge-options")
 public class ChallengeOptionController {
 

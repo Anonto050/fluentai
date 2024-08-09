@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(exposedHeaders = "content-range")
 @RequestMapping("/v1/personas")
 public class PersonaController {
 

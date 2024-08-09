@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(exposedHeaders = "content-range")
 @RequestMapping("/v1/users")
 public class UserController {
 
