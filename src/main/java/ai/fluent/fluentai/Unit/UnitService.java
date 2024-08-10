@@ -4,6 +4,8 @@ import ai.fluent.fluentai.Course.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import ai.fluent.fluentai.Course.Course;
 
@@ -21,6 +23,15 @@ public class UnitService {
 
     public List<Unit> getAllUnits() {
         return _unitRepository.findAll();
+    }
+
+    public List<Unit> getAllUnits(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return _unitRepository.findAll(pageable).getContent();
+    }
+
+    public int getTotalUnits() {
+        return (int) _unitRepository.count();
     }
 
     public Optional<Unit> createUnit(UnitDTO _unitDTO) {

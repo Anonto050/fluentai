@@ -3,6 +3,8 @@ package ai.fluent.fluentai.Lesson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -15,8 +17,20 @@ public class LessonController {
     private LessonService _lessonService;
 
     @GetMapping
-    public List<Lesson> getAllLessons() {
-        return _lessonService.getAllLessons();
+    public ResponseEntity<List<Lesson>> getAllLessons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Lesson> lessons = _lessonService.getAllLessons(page, size);
+        int totalLessons = _lessonService.getTotalLessons();
+
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalLessons - 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "lessons " + start + "-" + end + "/" + totalLessons);
+
+        return new ResponseEntity<>(lessons, headers, HttpStatus.OK);
     }
 
     @PostMapping

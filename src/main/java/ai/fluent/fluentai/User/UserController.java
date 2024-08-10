@@ -3,6 +3,8 @@ package ai.fluent.fluentai.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -15,8 +17,21 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<User> users = userService.getAllUsers(page, size);
+        int totalUsers = userService.countUsers();
+
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalUsers - 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "users " + start + "-" + end + "/" + totalUsers);
+
+        return new ResponseEntity<>(users, headers, HttpStatus.OK);
+
     }
 
     @PostMapping

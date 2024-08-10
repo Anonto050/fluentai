@@ -4,6 +4,8 @@ import ai.fluent.fluentai.User.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +56,15 @@ public class UserSubscriptionService {
 
     public List<UserSubscription> getAllUserSubscriptions() {
         return userSubscriptionRepository.findAll();
+    }
+
+    public List<UserSubscription> getAllUserSubscriptions(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userSubscriptionRepository.findAll(pageable).getContent();
+    }
+
+    public long countUserSubscriptions() {
+        return userSubscriptionRepository.count();
     }
 
     public Optional<UserSubscription> getUserSubscriptionById(int id) {

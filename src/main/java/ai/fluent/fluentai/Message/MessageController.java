@@ -3,6 +3,8 @@ package ai.fluent.fluentai.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,13 +41,28 @@ public class MessageController {
     }
 
     @GetMapping("/between/{senderId}/{receiverId}")
-    public ResponseEntity<List<MessageDTO>> getMessagesBySenderAndReceiverId(@PathVariable Integer senderId,
-            @PathVariable Integer receiverId) {
-        List<Message> messages = messageService.getMessagesBySenderAndReceiverId(senderId, receiverId);
+    public ResponseEntity<List<MessageDTO>> getMessagesBySenderAndReceiverId(
+            @PathVariable Integer senderId,
+            @PathVariable Integer receiverId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Message> messages = messageService.getMessagesBySenderAndReceiverId(senderId, receiverId, page, size);
+        int totalMessages = messageService.getTotalMessagesBySenderAndReceiverId(senderId, receiverId);
+
         List<MessageDTO> messageDTOs = messages.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(messageDTOs);
+
+        // Calculate the range
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalMessages - 1);
+
+        // Create headers and add Content-Range header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "messages " + start + "-" + end + "/" + totalMessages);
+
+        return new ResponseEntity<>(messageDTOs, headers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

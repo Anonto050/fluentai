@@ -2,6 +2,8 @@ package ai.fluent.fluentai.Course;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +13,15 @@ public class CourseService {
 
     @Autowired
     private CourseRepository _courseRepository;
+
+    public List<Course> getAllCourses(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return _courseRepository.findAll(pageable).getContent();
+    }
+
+    public int getTotalCourses() {
+        return (int) _courseRepository.count();
+    }
 
     public List<Course> getAllCourses() {
         return _courseRepository.findAll();

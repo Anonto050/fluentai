@@ -3,6 +3,8 @@ package ai.fluent.fluentai.Message;
 import ai.fluent.fluentai.User.User;
 import ai.fluent.fluentai.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -53,8 +55,13 @@ public class MessageService {
         return false;
     }
 
-    public List<Message> getMessagesBySenderAndReceiverId(Integer senderId, Integer receiverId) {
-        return messageRepository.findBySenderIdAndReceiverId(senderId, receiverId);
+    public List<Message> getMessagesBySenderAndReceiverId(Integer senderId, Integer receiverId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return messageRepository.findBySenderIdAndReceiverId(senderId, receiverId, pageable).getContent();
+    }
+
+    public int getTotalMessagesBySenderAndReceiverId(Integer senderId, Integer receiverId) {
+        return (int) messageRepository.countBySenderIdAndReceiverId(senderId, receiverId);
     }
 
     public Optional<Message> getMessageById(Integer id) {

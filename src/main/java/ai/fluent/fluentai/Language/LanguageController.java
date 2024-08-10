@@ -3,6 +3,8 @@ package ai.fluent.fluentai.Language;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -15,8 +17,20 @@ public class LanguageController {
     private LanguageService languageService;
 
     @GetMapping
-    public List<Language> getAllLanguages() {
-        return languageService.getAllLanguages();
+    public ResponseEntity<List<Language>> getAllLanguages(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Language> languages = languageService.getAllLanguages(page, size);
+        int totalLanguages = languageService.getTotalLanguages();
+
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalLanguages - 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "languages " + start + "-" + end + "/" + totalLanguages);
+
+        return new ResponseEntity<>(languages, headers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

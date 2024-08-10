@@ -3,6 +3,8 @@ package ai.fluent.fluentai.Persona;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +18,20 @@ public class PersonaController {
     private PersonaService personaService;
 
     @GetMapping
-    public List<Persona> getAllPersonas() {
-        return personaService.getAllPersonas();
+    public ResponseEntity<List<Persona>> getAllPersonas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Persona> personas = personaService.getAllPersonas(page, size);
+        int totalPersonas = personaService.getTotalPersonas();
+
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalPersonas - 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "personas " + start + "-" + end + "/" + totalPersonas);
+
+        return new ResponseEntity<>(personas, headers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

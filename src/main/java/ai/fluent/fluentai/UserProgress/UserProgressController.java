@@ -3,6 +3,8 @@ package ai.fluent.fluentai.UserProgress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -30,9 +32,21 @@ public class UserProgressController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserProgress>> getAllUserProgress() {
-        List<UserProgress> userProgressList = userProgressService.getAllUserProgress();
-        return ResponseEntity.ok(userProgressList);
+    public ResponseEntity<List<UserProgress>> getAllUserProgress(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<UserProgress> userProgressList = userProgressService.getAllUserProgress(page, size);
+        long totalUserProgress = userProgressService.countUserProgress();
+
+        long start = page * size;
+        long end = Math.min((page + 1) * size - 1, totalUserProgress - 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range",
+                "user-progress " + start + "-" + end + "/" + totalUserProgress);
+
+        return new ResponseEntity<>(userProgressList, headers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

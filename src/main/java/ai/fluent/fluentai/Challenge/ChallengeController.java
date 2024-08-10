@@ -3,6 +3,8 @@ package ai.fluent.fluentai.Challenge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -15,8 +17,22 @@ public class ChallengeController {
     private ChallengeService _challengeService;
 
     @GetMapping
-    public List<Challenge> getAllChallenges() {
-        return _challengeService.getAllChallenges();
+    public ResponseEntity<List<Challenge>> getAllChallenges(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Challenge> challenges = _challengeService.getAllChallenges(page, size);
+        int totalChallenges = _challengeService.getTotalChallenges();
+
+        // Calculate the range
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalChallenges - 1);
+
+        // Create headers and add Content-Range header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "challenges " + start + "-" + end + "/" + totalChallenges);
+
+        return new ResponseEntity<>(challenges, headers, HttpStatus.OK);
     }
 
     @PostMapping

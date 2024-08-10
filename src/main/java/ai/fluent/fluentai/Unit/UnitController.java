@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 
@@ -16,8 +17,20 @@ public class UnitController {
     private UnitService _unitService;
 
     @GetMapping
-    public ResponseEntity<List<Unit>> getAllUnits() {
-        return new ResponseEntity<>(_unitService.getAllUnits(), HttpStatus.OK);
+    public ResponseEntity<List<Unit>> getAllUnits(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Unit> units = _unitService.getAllUnits(page, size);
+        int totalUnits = _unitService.getTotalUnits();
+
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalUnits - 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "units " + start + "-" + end + "/" + totalUnits);
+
+        return new ResponseEntity<>(units, headers, HttpStatus.OK);
     }
 
     @PostMapping

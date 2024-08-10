@@ -4,6 +4,8 @@ import ai.fluent.fluentai.Lesson.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,15 @@ public class ChallengeService {
 
     public List<Challenge> getAllChallenges() {
         return _challengeRepository.findAll();
+    }
+
+    public List<Challenge> getAllChallenges(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return _challengeRepository.findAll(pageable).getContent();
+    }
+
+    public int getTotalChallenges() {
+        return (int) _challengeRepository.count();
     }
 
     public Optional<Challenge> createChallenge(ChallengeDTO _challengeDTO) {

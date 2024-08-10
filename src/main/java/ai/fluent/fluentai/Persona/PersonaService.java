@@ -2,6 +2,8 @@ package ai.fluent.fluentai.Persona;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,15 @@ public class PersonaService {
 
     public List<Persona> getAllPersonas() {
         return personaRepository.findAll();
+    }
+
+    public List<Persona> getAllPersonas(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return personaRepository.findAll(pageable).getContent();
+    }
+
+    public int getTotalPersonas() {
+        return (int) personaRepository.count();
     }
 
     public Optional<Persona> getPersonaById(Integer id) {

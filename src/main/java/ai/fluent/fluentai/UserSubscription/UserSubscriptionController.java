@@ -3,6 +3,8 @@ package ai.fluent.fluentai.UserSubscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +18,22 @@ public class UserSubscriptionController {
     private UserSubscriptionService userSubscriptionService;
 
     @GetMapping
-    public List<UserSubscription> getAllUserSubscriptions() {
-        return userSubscriptionService.getAllUserSubscriptions();
+    public ResponseEntity<List<UserSubscription>> getAllUserSubscriptions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<UserSubscription> userSubscriptions = userSubscriptionService.getAllUserSubscriptions(page, size);
+        long totalUserSubscriptions = userSubscriptionService.countUserSubscriptions();
+
+        long start = page * size;
+        long end = Math.min((page + 1) * size - 1, totalUserSubscriptions - 1);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range",
+                "user-subscriptions " + start + "-" + end + "/" + totalUserSubscriptions);
+
+        return new ResponseEntity<>(userSubscriptions, headers, HttpStatus.OK);
+
     }
 
     @GetMapping("/{id}")

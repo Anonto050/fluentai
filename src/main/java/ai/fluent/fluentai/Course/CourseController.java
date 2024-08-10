@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
 
 import java.util.List;
 
@@ -16,8 +17,22 @@ public class CourseController {
     private CourseService _courseService;
 
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        return new ResponseEntity<>(_courseService.getAllCourses(), HttpStatus.OK);
+    public ResponseEntity<List<Course>> getAllCourses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        List<Course> courses = _courseService.getAllCourses(page, size);
+        int totalCourses = _courseService.getTotalCourses();
+
+        // Calculate the range
+        int start = page * size;
+        int end = Math.min((page + 1) * size - 1, totalCourses - 1);
+
+        // Create headers and add Content-Range header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Range", "courses " + start + "-" + end + "/" + totalCourses);
+
+        return new ResponseEntity<>(courses, headers, HttpStatus.OK);
     }
 
     @PostMapping

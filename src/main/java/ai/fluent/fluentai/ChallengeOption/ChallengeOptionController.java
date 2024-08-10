@@ -3,6 +3,8 @@ package ai.fluent.fluentai.ChallengeOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,8 +56,13 @@ public class ChallengeOptionController {
         }
 
         @GetMapping
-        public ResponseEntity<List<ChallengeOptionDTO>> getAllChallengeOptions() {
-                List<ChallengeOption> challengeOptions = challengeOptionService.getAllChallengeOptions();
+        public ResponseEntity<List<ChallengeOptionDTO>> getAllChallengeOptions(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size) {
+
+                List<ChallengeOption> challengeOptions = challengeOptionService.getAllChallengeOptions(page, size);
+                int totalChallengeOptions = challengeOptionService.getTotalChallengeOptions();
+
                 List<ChallengeOptionDTO> dtos = challengeOptions.stream()
                                 .map(co -> new ChallengeOptionDTO(
                                                 co.getChallenge().getId(),
@@ -64,6 +71,15 @@ public class ChallengeOptionController {
                                                 co.getImageSrc(),
                                                 co.getAudioSrc()))
                                 .collect(Collectors.toList());
-                return ResponseEntity.ok(dtos);
+
+                // Calculate the range
+                int start = page * size;
+                int end = Math.min((page + 1) * size - 1, totalChallengeOptions - 1);
+
+                // Create headers and add Content-Range header
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Range", "challenge-options " + start + "-" + end + "/" + totalChallengeOptions);
+
+                return new ResponseEntity<>(dtos, headers, HttpStatus.OK);
         }
 }
