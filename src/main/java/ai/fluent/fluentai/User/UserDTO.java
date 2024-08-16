@@ -13,8 +13,9 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(String _username, String _email, String _password, String _name, String _photoUrl,
+    public UserDTO(Integer _id, String _username, String _email, String _password, String _name, String _photoUrl,
             int _nativeLangId) {
+        this.id = _id;
         this.username = _username;
         this.email = _email;
         this.password = _password;

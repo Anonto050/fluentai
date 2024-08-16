@@ -13,12 +13,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true)
     private Integer id;
 
     private String username;
     private String email;
-    private String password;
     private String name;
     private String photoUrl;
 
@@ -36,11 +35,10 @@ public class User {
     public User() {
     }
 
-    public User(String _username, String _email, String _password, String _name, String _photoUrl,
+    public User(String _username, String _email, String _name, String _photoUrl,
             Language _nativeLang) {
         this.username = _username;
         this.email = _email;
-        this.password = _password;
         this.name = _name;
         this.photoUrl = _photoUrl;
         this.nativeLang = _nativeLang;
@@ -56,10 +54,6 @@ public class User {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public String getName() {
@@ -94,10 +88,6 @@ public class User {
         this.email = _email;
     }
 
-    public void setPassword(String _password) {
-        this.password = _password;
-    }
-
     public void setName(String _name) {
         this.name = _name;
     }
@@ -124,7 +114,6 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
                 ", nativeLang=" + nativeLang +

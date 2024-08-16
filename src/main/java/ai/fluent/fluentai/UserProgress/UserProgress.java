@@ -1,5 +1,6 @@
 package ai.fluent.fluentai.UserProgress;
 
+import ai.fluent.fluentai.Course.Course;
 import ai.fluent.fluentai.User.User;
 import jakarta.persistence.*;
 
@@ -14,6 +15,9 @@ public class UserProgress {
     @OneToOne
     private User user;
 
+    @OneToOne
+    private Course activeCourse;
+
     @Column(nullable = false)
     private int hearts;
 
@@ -23,8 +27,9 @@ public class UserProgress {
     public UserProgress() {
     }
 
-    public UserProgress(User _user, int _hearts, int _points) {
+    public UserProgress(User _user, Course _activCourse, int _hearts, int _points) {
         this.user = _user;
+        this.activeCourse = _activCourse;
         this.hearts = _hearts;
         this.points = _points;
     }
@@ -35,6 +40,10 @@ public class UserProgress {
 
     public User getUser() {
         return user;
+    }
+
+    public Course getActiveCourse() {
+        return activeCourse;
     }
 
     public int getHearts() {
@@ -51,6 +60,10 @@ public class UserProgress {
 
     public void setUser(User _user) {
         this.user = _user;
+    }
+
+    public void setActiveCourse(Course _activeCourse) {
+        this.activeCourse = _activeCourse;
     }
 
     public void setHearts(int _hearts) {

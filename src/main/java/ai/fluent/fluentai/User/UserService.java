@@ -38,9 +38,9 @@ public class UserService {
 
     public User createUser(UserDTO userDTO) {
         User user = new User();
+        user.setId(userDTO.getId());
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
         user.setName(userDTO.getName());
         user.setPhotoUrl(userDTO.getPhotoUrl());
 
@@ -56,7 +56,6 @@ public class UserService {
         return userRepository.findById(id).map(user -> {
             user.setUsername(userDTO.getUsername());
             user.setEmail(userDTO.getEmail());
-            user.setPassword(userDTO.getPassword());
             user.setName(userDTO.getName());
             user.setPhotoUrl(userDTO.getPhotoUrl());
 
