@@ -8,6 +8,7 @@ class FluentaiApplicationTests {
 
 	@Test
 	void contextLoads() {
+
 		// print environment variables
 		System.out.println("Environment variables:");
 		System.getenv().forEach((k, v) -> System.out.println(k + ": " + v));
