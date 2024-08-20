@@ -66,3 +66,6 @@ jobs:
 
       - name: Push Docker Image
         run: docker push brainiac2677/fluentai-backend:latest
+
+      - name: Trigger Render Deploy
+        run: curl -X POST -d '{}' ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
