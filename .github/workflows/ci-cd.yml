@@ -33,9 +33,6 @@ jobs:
       - name: Build with Maven
         run: mvn clean package
 
-      - name: Run Tests
-        run: mvn test
-
       - name: Upload JAR Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -58,10 +55,10 @@ jobs:
           path: ./target
 
       - name: Build Docker Image
-        run: docker build -t brainiac2677/fluentai:latest .
+        run: docker build -t brainiac2677/fluentai-backend:latest .
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Push Docker Image
-        run: docker push brainiac2677/fluentai:latest
+        run: docker push brainiac2677/fluentai-backend:latest

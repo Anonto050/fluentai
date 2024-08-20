@@ -13,7 +13,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   app:
-    image: brainiac2677/fluentai:latest
+    image: brainiac2677/fluentai-backend:latest
     ports:
       - "8080:8080"
     environment:
