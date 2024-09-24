@@ -2,6 +2,7 @@ package ai.fluent.fluentai.UserProgress;
 
 import ai.fluent.fluentai.Course.Course;
 import ai.fluent.fluentai.User.User;
+import ai.fluent.fluentai.Lesson.Lesson;
 import jakarta.persistence.*;
 
 @Entity
@@ -18,6 +19,11 @@ public class UserProgress {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course activeCourse;
+
+    // active lesson in course
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id", nullable = false)
+    private Lesson activeLesson;
 
     @Column(nullable = false)
     private int hearts;
