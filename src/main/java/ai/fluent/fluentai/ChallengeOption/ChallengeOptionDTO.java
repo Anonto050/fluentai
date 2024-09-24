@@ -12,8 +12,9 @@ public class ChallengeOptionDTO {
     public ChallengeOptionDTO() {
     }
 
-    public ChallengeOptionDTO(Integer _challengeId, String _text, Boolean _correct, String _imageSrc,
+    public ChallengeOptionDTO(Integer _id, Integer _challengeId, String _text, Boolean _correct, String _imageSrc,
             String _audioSrc) {
+        this.id = _id;
         this.challengeId = _challengeId;
         this.text = _text;
         this.correct = _correct;

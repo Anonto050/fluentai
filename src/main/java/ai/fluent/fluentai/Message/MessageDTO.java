@@ -5,15 +5,15 @@ import java.time.LocalDateTime;
 public class MessageDTO {
 
     private Integer id;
-    private Integer senderId;
-    private Integer receiverId;
+    private String senderId;
+    private String receiverId;
     private LocalDateTime timestamp;
     private String content;
 
     public MessageDTO() {
     }
 
-    public MessageDTO(Integer _id, Integer _senderId, Integer _receiverId, LocalDateTime _timestamp, String _content) {
+    public MessageDTO(Integer _id, String _senderId, String _receiverId, LocalDateTime _timestamp, String _content) {
         this.id = _id;
         this.senderId = _senderId;
         this.receiverId = _receiverId;
@@ -29,19 +29,19 @@ public class MessageDTO {
         this.id = _id;
     }
 
-    public Integer getSenderId() {
+    public String getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(Integer _senderId) {
+    public void setSenderId(String _senderId) {
         this.senderId = _senderId;
     }
 
-    public Integer getReceiverId() {
+    public String getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(Integer _receiverId) {
+    public void setReceiverId(String _receiverId) {
         this.receiverId = _receiverId;
     }
 

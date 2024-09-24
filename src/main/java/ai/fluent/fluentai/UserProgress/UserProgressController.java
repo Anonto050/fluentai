@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(exposedHeaders = "content-range")
@@ -32,12 +33,20 @@ public class UserProgressController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserProgress>> getAllUserProgress(
+    public ResponseEntity<List<UserProgressDTO>> getAllUserProgress(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         List<UserProgress> userProgressList = userProgressService.getAllUserProgress(page, size);
         long totalUserProgress = userProgressService.countUserProgress();
+
+        List<UserProgressDTO> userProgressDTOList = userProgressList.stream()
+                .map(userProgress -> new UserProgressDTO(
+                        userProgress.getUser().getId(),
+                        userProgress.getActiveCourse().getId(),
+                        userProgress.getHearts(),
+                        userProgress.getPoints()))
+                .collect(Collectors.toList());
 
         long start = page * size;
         long end = Math.min((page + 1) * size - 1, totalUserProgress - 1);
@@ -46,14 +55,30 @@ public class UserProgressController {
         headers.add("Content-Range",
                 "user-progress " + start + "-" + end + "/" + totalUserProgress);
 
-        return new ResponseEntity<>(userProgressList, headers, HttpStatus.OK);
+        return new ResponseEntity<>(userProgressDTOList, headers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserProgress> getUserProgressById(@PathVariable int id) {
+    public ResponseEntity<UserProgressDTO> getUserProgressById(@PathVariable int id) {
         return userProgressService.getUserProgressById(id)
-                .map(ResponseEntity::ok)
+                .map(userProgress -> ResponseEntity.ok(new UserProgressDTO(
+                        userProgress.getUser().getId(),
+                        userProgress.getActiveCourse().getId(),
+                        userProgress.getHearts(),
+                        userProgress.getPoints())))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/top-users")
+    public ResponseEntity<List<UserProgressDTO>> getTopUsers(@RequestParam int limit) {
+        List<UserProgressDTO> topUsers = userProgressService.getTopUsers(limit).stream()
+                .map(userProgress -> new UserProgressDTO(
+                        userProgress.getUser().getId(),
+                        userProgress.getActiveCourse().getId(),
+                        userProgress.getHearts(),
+                        userProgress.getPoints()))
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(topUsers, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

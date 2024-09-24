@@ -55,12 +55,12 @@ public class MessageService {
         return false;
     }
 
-    public List<Message> getMessagesBySenderAndReceiverId(Integer senderId, Integer receiverId, int page, int size) {
+    public List<Message> getMessagesBySenderAndReceiverId(String senderId, String receiverId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return messageRepository.findBySenderIdAndReceiverId(senderId, receiverId, pageable).getContent();
     }
 
-    public int getTotalMessagesBySenderAndReceiverId(Integer senderId, Integer receiverId) {
+    public int getTotalMessagesBySenderAndReceiverId(String senderId, String receiverId) {
         return (int) messageRepository.countBySenderIdAndReceiverId(senderId, receiverId);
     }
 

@@ -2,7 +2,7 @@ package ai.fluent.fluentai.UserProgress;
 
 public class UserProgressDTO {
 
-    private int userId;
+    private String userId;
     private int activeCourseId;
     private int hearts;
     private int points;
@@ -10,18 +10,18 @@ public class UserProgressDTO {
     public UserProgressDTO() {
     }
 
-    public UserProgressDTO(int _userId, int _activeCourseId, int _hearts, int _points) {
+    public UserProgressDTO(String _userId, int _activeCourseId, int _hearts, int _points) {
         this.userId = _userId;
         this.activeCourseId = _activeCourseId;
         this.hearts = _hearts;
         this.points = _points;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int _userId) {
+    public void setUserId(String _userId) {
         this.userId = _userId;
     }
 

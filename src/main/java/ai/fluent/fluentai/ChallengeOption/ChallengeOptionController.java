@@ -44,12 +44,12 @@ public class ChallengeOptionController {
                 return challengeOptionService.getChallengeOptionById(id)
                                 .map(challengeOption -> {
                                         ChallengeOptionDTO dto = new ChallengeOptionDTO(
+                                                        challengeOption.getId(),
                                                         challengeOption.getChallenge().getId(),
                                                         challengeOption.getText(),
                                                         challengeOption.getCorrect(),
                                                         challengeOption.getImageSrc(),
                                                         challengeOption.getAudioSrc());
-                                        dto.setId(challengeOption.getId());
                                         return ResponseEntity.ok(dto);
                                 })
                                 .orElse(ResponseEntity.notFound().build());
@@ -65,6 +65,7 @@ public class ChallengeOptionController {
 
                 List<ChallengeOptionDTO> dtos = challengeOptions.stream()
                                 .map(co -> new ChallengeOptionDTO(
+                                                co.getId(),
                                                 co.getChallenge().getId(),
                                                 co.getText(),
                                                 co.getCorrect(),

@@ -14,7 +14,7 @@ public class User {
 
     @Id
     @Column(unique = true)
-    private Integer id;
+    private String id;
 
     private String username;
     private String email;
@@ -35,8 +35,9 @@ public class User {
     public User() {
     }
 
-    public User(String _username, String _email, String _name, String _photoUrl,
+    public User(String _id, String _username, String _email, String _name, String _photoUrl,
             Language _nativeLang) {
+        this.id = _id;
         this.username = _username;
         this.email = _email;
         this.name = _name;
@@ -44,7 +45,7 @@ public class User {
         this.nativeLang = _nativeLang;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
@@ -76,7 +77,7 @@ public class User {
         return updatedAt;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

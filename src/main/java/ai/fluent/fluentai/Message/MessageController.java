@@ -42,8 +42,8 @@ public class MessageController {
 
     @GetMapping("/between/{senderId}/{receiverId}")
     public ResponseEntity<List<MessageDTO>> getMessagesBySenderAndReceiverId(
-            @PathVariable Integer senderId,
-            @PathVariable Integer receiverId,
+            @PathVariable String senderId,
+            @PathVariable String receiverId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 

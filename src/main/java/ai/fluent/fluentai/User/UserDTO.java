@@ -2,7 +2,7 @@ package ai.fluent.fluentai.User;
 
 public class UserDTO {
 
-    private Integer id;
+    private String id;
     private String username;
     private String email;
     private String name;
@@ -12,7 +12,7 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(Integer _id, String _username, String _email, String _name, String _photoUrl,
+    public UserDTO(String _id, String _username, String _email, String _name, String _photoUrl,
             int _nativeLangId) {
         this.id = _id;
         this.username = _username;
@@ -22,7 +22,7 @@ public class UserDTO {
         this.nativeLangId = _nativeLangId;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
@@ -46,7 +46,7 @@ public class UserDTO {
         return nativeLangId;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

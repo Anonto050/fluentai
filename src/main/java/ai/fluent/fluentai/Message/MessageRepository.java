@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Integer> {
 
-    Page<Message> findBySenderIdAndReceiverId(Integer senderId, Integer receiverId, Pageable pageable);
+    Page<Message> findBySenderIdAndReceiverId(String senderId, String receiverId, Pageable pageable);
 
-    long countBySenderIdAndReceiverId(Integer senderId, Integer receiverId);
+    long countBySenderIdAndReceiverId(String senderId, String receiverId);
 }

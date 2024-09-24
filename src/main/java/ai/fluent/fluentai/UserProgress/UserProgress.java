@@ -15,7 +15,8 @@ public class UserProgress {
     @OneToOne
     private User user;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
     private Course activeCourse;
 
     @Column(nullable = false)

@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class UserSubscriptionDTO {
 
-    private int userId;
+    private String userId;
     private String stripeCustomerId;
     private String stripeSubscriptionId;
     private String stripePriceId;
@@ -14,7 +14,7 @@ public class UserSubscriptionDTO {
     public UserSubscriptionDTO() {
     }
 
-    public UserSubscriptionDTO(int _userId, String _stripeCustomerId, String _stripeSubscriptionId,
+    public UserSubscriptionDTO(String _userId, String _stripeCustomerId, String _stripeSubscriptionId,
             String _stripePriceId,
             LocalDateTime _stripeCurrentPeriodEnd, boolean _isActive) {
         this.userId = _userId;
@@ -25,11 +25,11 @@ public class UserSubscriptionDTO {
         this.isActive = _isActive;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int _userId) {
+    public void setUserId(String _userId) {
         this.userId = _userId;
     }
 

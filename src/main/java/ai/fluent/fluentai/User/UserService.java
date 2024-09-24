@@ -32,7 +32,7 @@ public class UserService {
         return (int) userRepository.count();
     }
 
-    public Optional<User> getUserById(Integer id) {
+    public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
@@ -52,7 +52,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> updateUser(Integer id, UserDTO userDTO) {
+    public Optional<User> updateUser(String id, UserDTO userDTO) {
         return userRepository.findById(id).map(user -> {
             user.setUsername(userDTO.getUsername());
             user.setEmail(userDTO.getEmail());
@@ -68,7 +68,7 @@ public class UserService {
         });
     }
 
-    public boolean deleteUser(Integer id) {
+    public boolean deleteUser(String id) {
         return userRepository.findById(id).map(user -> {
             userRepository.delete(user);
             return true;

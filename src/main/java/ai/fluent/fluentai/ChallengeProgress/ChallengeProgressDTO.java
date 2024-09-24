@@ -3,14 +3,14 @@ package ai.fluent.fluentai.ChallengeProgress;
 public class ChallengeProgressDTO {
 
     private Integer id;
-    private Integer userId;
+    private String userId;
     private Integer challengeId;
     private Boolean completed;
 
     public ChallengeProgressDTO() {
     }
 
-    public ChallengeProgressDTO(Integer _userId, Integer _challengeId, Boolean _completed) {
+    public ChallengeProgressDTO(String _userId, Integer _challengeId, Boolean _completed) {
         this.userId = _userId;
         this.challengeId = _challengeId;
         this.completed = _completed;
@@ -25,11 +25,11 @@ public class ChallengeProgressDTO {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

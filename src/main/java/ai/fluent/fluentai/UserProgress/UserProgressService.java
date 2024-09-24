@@ -61,6 +61,10 @@ public class UserProgressService {
         return userProgressRepository.findAll(pageable).getContent();
     }
 
+    public List<UserProgress> getTopUsers(int limit) {
+        return userProgressRepository.findTopUsers(PageRequest.of(0, limit));
+    }
+
     public long countUserProgress() {
         return userProgressRepository.count();
     }

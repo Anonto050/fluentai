@@ -59,13 +59,10 @@ jobs:
           path: ./target
 
       - name: Build Docker Image
-        run: docker build -t brainiac2677/fluentai-backend:latest .
+        run: docker build -t registry.digitalocean.com/fluentai/fluentai-backend:latest .
 
-      - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+      - name: Log in to DigitalOcean Container Registry
+        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login registry.digitalocean.com -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
 
       - name: Push Docker Image
-        run: docker push brainiac2677/fluentai-backend:latest
-
-      - name: Trigger Render Deploy
-        run: curl -X POST -d '{}' ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: docker push registry.digitalocean.com/fluentai/fluentai-backend:latest
