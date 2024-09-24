@@ -26,7 +26,9 @@ public class UserProgressService {
     @Autowired
     private LessonRepository lessonRepository;
 
-    // Update methods in UserProgressService
+    public List<UserProgress> getUserProgressByUserId(String userId) {
+        return userProgressRepository.findByUserId(userId);
+    }
 
     public Optional<UserProgress> createUserProgress(UserProgressDTO userProgressDTO) {
         Optional<User> userOptional = userRepository.findById(userProgressDTO.getUserId());

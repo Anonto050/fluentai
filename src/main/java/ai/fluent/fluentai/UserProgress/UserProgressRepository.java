@@ -12,4 +12,6 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, Inte
 
     @Query("SELECT u FROM UserProgress u ORDER BY u.points DESC")
     List<UserProgress> findTopUsers(Pageable pageable);
+
+    List<UserProgress> findByUserId(String userId);
 }

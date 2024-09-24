@@ -32,6 +32,26 @@ public class UserProgressController {
                                 .orElse(ResponseEntity.badRequest().build());
         }
 
+        @GetMapping("/user/{userId}")
+        public ResponseEntity<List<UserProgressDTO>> getUserProgressByUserId(@PathVariable String userId) {
+                List<UserProgress> userProgressList = userProgressService.getUserProgressByUserId(userId);
+                if (userProgressList.isEmpty()) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                List<UserProgressDTO> userProgressDTOList = userProgressList.stream()
+                                .map(userProgress -> new UserProgressDTO(
+                                                userProgress.getUser().getId(),
+                                                userProgress.getActiveCourse().getId(),
+                                                userProgress.getActiveLesson().getId(),
+                                                userProgress.getCompletedChallenges(),
+                                                userProgress.getHearts(),
+                                                userProgress.getPoints()))
+                                .collect(Collectors.toList());
+
+                return ResponseEntity.ok(userProgressDTOList);
+        }
+
         @GetMapping
         public ResponseEntity<List<UserProgressDTO>> getAllUserProgress(
                         @RequestParam(defaultValue = "0") int page,
