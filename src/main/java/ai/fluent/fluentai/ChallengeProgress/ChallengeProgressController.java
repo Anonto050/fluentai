@@ -44,7 +44,8 @@ public class ChallengeProgressController {
         Optional<ChallengeProgress> challengeProgress = challengeProgressService.getChallengeProgressById(id);
         if (challengeProgress.isPresent()) {
             ChallengeProgress cp = challengeProgress.get();
-            ChallengeProgressDTO dto = new ChallengeProgressDTO(cp.getUser().getId(), cp.getChallenge().getId(),
+            ChallengeProgressDTO dto = new ChallengeProgressDTO(cp.getId(), cp.getUser().getId(),
+                    cp.getChallenge().getId(),
                     cp.getCompleted());
             dto.setId(cp.getId());
             return ResponseEntity.ok(dto);
@@ -52,16 +53,43 @@ public class ChallengeProgressController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ChallengeProgressDTO>> getChallengeProgressByUserId(@PathVariable String userId) {
+        List<ChallengeProgress> challengeProgressList = challengeProgressService.getChallengeProgressByUserId(userId);
+        if (challengeProgressList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<ChallengeProgressDTO> dtos = challengeProgressList.stream()
+                .map(cp -> new ChallengeProgressDTO(cp.getId(), cp.getUser().getId(), cp.getChallenge().getId(),
+                        cp.getCompleted()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping
     public ResponseEntity<List<ChallengeProgressDTO>> getAllChallengeProgress(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String userId,
+            @RequestParam int challengeId) {
 
         List<ChallengeProgress> challengeProgressList = challengeProgressService.getAllChallengeProgress(page, size);
+        if (userId != "0") {
+            challengeProgressList = challengeProgressList.stream()
+                    .filter(cp -> cp.getUser().getId().equals(userId))
+                    .collect(Collectors.toList());
+        }
+        if (challengeId != 0) {
+            challengeProgressList = challengeProgressList.stream()
+                    .filter(cp -> cp.getChallenge().getId().equals(challengeId))
+                    .collect(Collectors.toList());
+        }
         int totalChallengeProgress = challengeProgressService.getTotalChallengeProgress();
 
         List<ChallengeProgressDTO> dtos = challengeProgressList.stream()
-                .map(cp -> new ChallengeProgressDTO(cp.getUser().getId(), cp.getChallenge().getId(),
+                .map(cp -> new ChallengeProgressDTO(cp.getId(), cp.getUser().getId(), cp.getChallenge().getId(),
                         cp.getCompleted()))
                 .collect(Collectors.toList());
 

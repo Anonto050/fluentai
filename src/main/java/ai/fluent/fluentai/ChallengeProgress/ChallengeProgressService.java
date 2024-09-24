@@ -49,6 +49,10 @@ public class ChallengeProgressService {
         return challengeProgressRepository.findById(id);
     }
 
+    public List<ChallengeProgress> getChallengeProgressByUserId(String userId) {
+        return challengeProgressRepository.findByUserId(userId);
+    }
+
     public List<ChallengeProgress> getAllChallengeProgress() {
         return challengeProgressRepository.findAll();
     }

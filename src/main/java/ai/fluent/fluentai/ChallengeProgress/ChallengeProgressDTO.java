@@ -10,7 +10,8 @@ public class ChallengeProgressDTO {
     public ChallengeProgressDTO() {
     }
 
-    public ChallengeProgressDTO(String _userId, Integer _challengeId, Boolean _completed) {
+    public ChallengeProgressDTO(Integer _id, String _userId, Integer _challengeId, Boolean _completed) {
+        this.id = _id;
         this.userId = _userId;
         this.challengeId = _challengeId;
         this.completed = _completed;

@@ -54,6 +54,10 @@ public class UserSubscriptionService {
         return Optional.empty();
     }
 
+    public List<UserSubscription> getUserSubscriptionByUserId(String userId) {
+        return userSubscriptionRepository.findByUserId(userId);
+    }
+
     public List<UserSubscription> getAllUserSubscriptions() {
         return userSubscriptionRepository.findAll();
     }

@@ -17,6 +17,15 @@ public class UserSubscriptionController {
     @Autowired
     private UserSubscriptionService userSubscriptionService;
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<UserSubscription>> getUserSubscriptionsByUserId(@PathVariable String userId) {
+        List<UserSubscription> userSubscriptions = userSubscriptionService.getUserSubscriptionByUserId(userId);
+        if (userSubscriptions.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userSubscriptions);
+    }
+
     @GetMapping
     public ResponseEntity<List<UserSubscription>> getAllUserSubscriptions(
             @RequestParam(defaultValue = "0") int page,
