@@ -14,77 +14,95 @@ import java.util.stream.Collectors;
 @RequestMapping("/v1/user-progress")
 public class UserProgressController {
 
-    @Autowired
-    private UserProgressService userProgressService;
+        @Autowired
+        private UserProgressService userProgressService;
 
-    @PostMapping
-    public ResponseEntity<UserProgress> createUserProgress(@RequestBody UserProgressDTO userProgressDTO) {
-        return userProgressService.createUserProgress(userProgressDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().build());
-    }
+        @PostMapping
+        public ResponseEntity<UserProgress> createUserProgress(@RequestBody UserProgressDTO userProgressDTO) {
+                return userProgressService.createUserProgress(userProgressDTO)
+                                .map(ResponseEntity::ok)
+                                .orElse(ResponseEntity.badRequest().build());
+        }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserProgress> updateUserProgress(@PathVariable int id,
-            @RequestBody UserProgressDTO userProgressDTO) {
-        return userProgressService.updateUserProgress(id, userProgressDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().build());
-    }
+        @PutMapping("/{id}")
+        public ResponseEntity<UserProgress> updateUserProgress(@PathVariable int id,
+                        @RequestBody UserProgressDTO userProgressDTO) {
+                return userProgressService.updateUserProgress(id, userProgressDTO)
+                                .map(ResponseEntity::ok)
+                                .orElse(ResponseEntity.badRequest().build());
+        }
 
-    @GetMapping
-    public ResponseEntity<List<UserProgressDTO>> getAllUserProgress(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+        @GetMapping
+        public ResponseEntity<List<UserProgressDTO>> getAllUserProgress(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size) {
 
-        List<UserProgress> userProgressList = userProgressService.getAllUserProgress(page, size);
-        long totalUserProgress = userProgressService.countUserProgress();
+                List<UserProgress> userProgressList = userProgressService.getAllUserProgress(page, size);
+                long totalUserProgress = userProgressService.countUserProgress();
 
-        List<UserProgressDTO> userProgressDTOList = userProgressList.stream()
-                .map(userProgress -> new UserProgressDTO(
-                        userProgress.getUser().getId(),
-                        userProgress.getActiveCourse().getId(),
-                        userProgress.getHearts(),
-                        userProgress.getPoints()))
-                .collect(Collectors.toList());
+                List<UserProgressDTO> userProgressDTOList = userProgressList.stream()
+                                .map(userProgress -> new UserProgressDTO(
+                                                userProgress.getUser().getId(),
+                                                userProgress.getActiveCourse().getId(),
+                                                userProgress.getActiveLesson().getId(),
+                                                userProgress.getCompletedChallenges(),
+                                                userProgress.getHearts(),
+                                                userProgress.getPoints()))
+                                .collect(Collectors.toList());
 
-        long start = page * size;
-        long end = Math.min((page + 1) * size - 1, totalUserProgress - 1);
+                long start = page * size;
+                long end = Math.min((page + 1) * size - 1, totalUserProgress - 1);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Range",
-                "user-progress " + start + "-" + end + "/" + totalUserProgress);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Content-Range",
+                                "user-progress " + start + "-" + end + "/" + totalUserProgress);
 
-        return new ResponseEntity<>(userProgressDTOList, headers, HttpStatus.OK);
-    }
+                return new ResponseEntity<>(userProgressDTOList, headers, HttpStatus.OK);
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserProgressDTO> getUserProgressById(@PathVariable int id) {
-        return userProgressService.getUserProgressById(id)
-                .map(userProgress -> ResponseEntity.ok(new UserProgressDTO(
-                        userProgress.getUser().getId(),
-                        userProgress.getActiveCourse().getId(),
-                        userProgress.getHearts(),
-                        userProgress.getPoints())))
-                .orElse(ResponseEntity.notFound().build());
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<UserProgressDTO> getUserProgressById(@PathVariable int id) {
+                return userProgressService.getUserProgressById(id)
+                                .map(userProgress -> ResponseEntity.ok(new UserProgressDTO(
+                                                userProgress.getUser().getId(),
+                                                userProgress.getActiveCourse().getId(),
+                                                userProgress.getActiveLesson().getId(),
+                                                userProgress.getCompletedChallenges(),
+                                                userProgress.getHearts(),
+                                                userProgress.getPoints())))
+                                .orElse(ResponseEntity.notFound().build());
+        }
 
-    @GetMapping("/top-users")
-    public ResponseEntity<List<UserProgressDTO>> getTopUsers(@RequestParam int limit) {
-        List<UserProgressDTO> topUsers = userProgressService.getTopUsers(limit).stream()
-                .map(userProgress -> new UserProgressDTO(
-                        userProgress.getUser().getId(),
-                        userProgress.getActiveCourse().getId(),
-                        userProgress.getHearts(),
-                        userProgress.getPoints()))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(topUsers, HttpStatus.OK);
-    }
+        @GetMapping("/top-users")
+        public ResponseEntity<List<UserProgressDTO>> getTopUsers(@RequestParam int limit) {
+                List<UserProgressDTO> topUsers = userProgressService.getTopUsers(limit).stream()
+                                .map(userProgress -> new UserProgressDTO(
+                                                userProgress.getUser().getId(),
+                                                userProgress.getActiveCourse().getId(),
+                                                userProgress.getActiveLesson().getId(),
+                                                userProgress.getCompletedChallenges(),
+                                                userProgress.getHearts(),
+                                                userProgress.getPoints()))
+                                .collect(Collectors.toList());
+                return new ResponseEntity<>(topUsers, HttpStatus.OK);
+        }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserProgress(@PathVariable int id) {
-        return userProgressService.deleteUserProgress(id) ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
-    }
+        @GetMapping("/{id}/progress")
+        public ResponseEntity<Double> getLessonCompletionPercentage(@PathVariable int id) {
+                return userProgressService.getUserProgressById(id)
+                                .map(userProgress -> {
+                                        int totalChallenges = userProgress.getActiveLesson().getTotalChallenges();
+                                        double percentage = (userProgress.getCompletedChallenges()
+                                                        / (double) totalChallenges) * 100;
+                                        return ResponseEntity.ok(percentage);
+                                })
+                                .orElse(ResponseEntity.notFound().build());
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Void> deleteUserProgress(@PathVariable int id) {
+                return userProgressService.deleteUserProgress(id) ? ResponseEntity.noContent().build()
+                                : ResponseEntity.notFound().build();
+        }
 
 }

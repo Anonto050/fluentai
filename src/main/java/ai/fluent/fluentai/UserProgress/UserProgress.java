@@ -16,14 +16,16 @@ public class UserProgress {
     @OneToOne
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "course_id", nullable = false)
     private Course activeCourse;
 
-    // active lesson in course
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson activeLesson;
+
+    @Column(nullable = false)
+    private int completedChallenges;
 
     @Column(nullable = false)
     private int hearts;
@@ -34,9 +36,12 @@ public class UserProgress {
     public UserProgress() {
     }
 
-    public UserProgress(User _user, Course _activCourse, int _hearts, int _points) {
+    public UserProgress(User _user, Course _activCourse, Lesson _activeLesson, int _completedChallenges, int _hearts,
+            int _points) {
         this.user = _user;
         this.activeCourse = _activCourse;
+        this.activeLesson = _activeLesson;
+        this.completedChallenges = _completedChallenges;
         this.hearts = _hearts;
         this.points = _points;
     }
@@ -51,6 +56,14 @@ public class UserProgress {
 
     public Course getActiveCourse() {
         return activeCourse;
+    }
+
+    public Lesson getActiveLesson() {
+        return activeLesson;
+    }
+
+    public int getCompletedChallenges() {
+        return completedChallenges;
     }
 
     public int getHearts() {
@@ -71,6 +84,14 @@ public class UserProgress {
 
     public void setActiveCourse(Course _activeCourse) {
         this.activeCourse = _activeCourse;
+    }
+
+    public void setActiveLesson(Lesson _activeLesson) {
+        this.activeLesson = _activeLesson;
+    }
+
+    public void setCompletedChallenges(int _completedChallenges) {
+        this.completedChallenges = _completedChallenges;
     }
 
     public void setHearts(int _hearts) {

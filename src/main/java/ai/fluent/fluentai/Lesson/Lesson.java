@@ -4,6 +4,7 @@ import ai.fluent.fluentai.Challenge.Challenge;
 
 import ai.fluent.fluentai.Unit.Unit;
 import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class Lesson {
     @Column(name = "lesson_order", nullable = false)
     private Integer order;
 
-    @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "lesson", fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Challenge> challenges;
 
@@ -76,6 +77,13 @@ public class Lesson {
 
     public List<Challenge> getChallenges() {
         return challenges;
+    }
+
+    public int getTotalChallenges() {
+        if (challenges == null) {
+            return 0;
+        }
+        return challenges.size();
     }
 
     public void setChallenges(List<Challenge> _challenges) {

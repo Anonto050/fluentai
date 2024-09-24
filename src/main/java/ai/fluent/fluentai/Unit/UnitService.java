@@ -40,12 +40,10 @@ public class UnitService {
         Optional<Course> course = _courseRepository.findById(_unitDTO.getCourseId());
         System.out.println(course);
         if (course.isPresent()) {
-            System.out.println("Course is present");
             unit.setTitle(_unitDTO.getTitle());
             unit.setDescription(_unitDTO.getDescription());
             unit.setOrder(_unitDTO.getOrder());
             unit.setCourse(course.get());
-            System.out.println(unit);
             return Optional.of(_unitRepository.save(unit));
         }
         return Optional.empty();

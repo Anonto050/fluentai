@@ -4,17 +4,31 @@ public class UserProgressDTO {
 
     private String userId;
     private int activeCourseId;
+    private int activeLessonId;
+    private int completedChallenges;
     private int hearts;
     private int points;
 
     public UserProgressDTO() {
     }
 
-    public UserProgressDTO(String _userId, int _activeCourseId, int _hearts, int _points) {
+    public UserProgressDTO(String _userId, int _activeCourseId, int _activeLessonId, int _completedChallenges,
+            int _hearts, int _points) {
         this.userId = _userId;
         this.activeCourseId = _activeCourseId;
+        this.activeLessonId = _activeLessonId;
+        this.completedChallenges = _completedChallenges;
         this.hearts = _hearts;
         this.points = _points;
+    }
+
+    public UserProgressDTO(UserProgress userProgress) {
+        this.userId = userProgress.getUser().getId();
+        this.activeCourseId = userProgress.getActiveCourse().getId();
+        this.activeLessonId = userProgress.getActiveLesson().getId();
+        this.completedChallenges = userProgress.getCompletedChallenges();
+        this.hearts = userProgress.getHearts();
+        this.points = userProgress.getPoints();
     }
 
     public String getUserId() {
@@ -31,6 +45,22 @@ public class UserProgressDTO {
 
     public void setActiveCourseId(int _activeCourseId) {
         this.activeCourseId = _activeCourseId;
+    }
+
+    public int getActiveLessonId() {
+        return activeLessonId;
+    }
+
+    public void setActiveLessonId(int _activeLessonId) {
+        this.activeLessonId = _activeLessonId;
+    }
+
+    public int getCompletedChallenges() {
+        return completedChallenges;
+    }
+
+    public void setCompletedChallenges(int _completedChallenges) {
+        this.completedChallenges = _completedChallenges;
     }
 
     public int getHearts() {

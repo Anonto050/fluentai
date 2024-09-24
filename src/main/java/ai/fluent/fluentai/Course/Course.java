@@ -22,7 +22,7 @@ public class Course {
     @Column(nullable = false)
     private String imageSrc;
 
-    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Unit> units;
 
