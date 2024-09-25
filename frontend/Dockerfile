@@ -16,7 +16,7 @@ RUN npm install --no-audit --prefer-offline
 COPY . .
 
 # Copy the .env file to the container
-COPY .env .env
+# COPY .env .env
 
 # Build the Next.js app
 RUN npm run build
@@ -38,7 +38,7 @@ RUN npm install --only=production --no-audit --prefer-offline
 COPY --from=builder /app/.next /app/.next
 COPY --from=builder /app/public /app/public
 COPY --from=builder /app/next.config.mjs /app/next.config.mjs
-COPY --from=builder /app/.env .env  # Copy .env to production stage
+# COPY --from=builder /app/.env .env  # Copy .env to production stage
 
 # Expose the Next.js default port
 EXPOSE 3000
