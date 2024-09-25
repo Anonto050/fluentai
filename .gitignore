@@ -63,8 +63,8 @@ target/
 # .env.production
 
 # Docker
-*.dockerignore
-Dockerfile
+# *.dockerignore
+# Dockerfile
 
 # Gradle
 .gradle/
