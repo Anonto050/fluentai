@@ -11,7 +11,7 @@ public class UserProgress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @OneToOne
     private User user;
@@ -46,7 +46,7 @@ public class UserProgress {
         this.points = _points;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
@@ -74,7 +74,7 @@ public class UserProgress {
         return points;
     }
 
-    public void setId(Long _id) {
+    public void setId(int _id) {
         this.id = _id;
     }
 

@@ -49,6 +49,7 @@ public class UserProgressController {
 
                 List<UserProgressDTO> userProgressDTOList = userProgressList.stream()
                                 .map(userProgress -> new UserProgressDTO(
+                                                userProgress.getId(),
                                                 userProgress.getUser().getId(),
                                                 userProgress.getActiveCourse().getId(),
                                                 userProgress.getActiveLesson().getId(),
@@ -70,6 +71,7 @@ public class UserProgressController {
 
                 List<UserProgressDTO> userProgressDTOList = userProgressList.stream()
                                 .map(userProgress -> new UserProgressDTO(
+                                                userProgress.getId(),
                                                 userProgress.getUser().getId(),
                                                 userProgress.getActiveCourse().getId(),
                                                 userProgress.getActiveLesson().getId(),
@@ -92,6 +94,7 @@ public class UserProgressController {
         public ResponseEntity<UserProgressDTO> getUserProgressById(@PathVariable int id) {
                 return userProgressService.getUserProgressById(id)
                                 .map(userProgress -> ResponseEntity.ok(new UserProgressDTO(
+                                                userProgress.getId(),
                                                 userProgress.getUser().getId(),
                                                 userProgress.getActiveCourse().getId(),
                                                 userProgress.getActiveLesson().getId(),
@@ -105,6 +108,7 @@ public class UserProgressController {
         public ResponseEntity<List<UserProgressDTO>> getTopUsers(@RequestParam int limit) {
                 List<UserProgressDTO> topUsers = userProgressService.getTopUsers(limit).stream()
                                 .map(userProgress -> new UserProgressDTO(
+                                                userProgress.getId(),
                                                 userProgress.getUser().getId(),
                                                 userProgress.getActiveCourse().getId(),
                                                 userProgress.getActiveLesson().getId(),
