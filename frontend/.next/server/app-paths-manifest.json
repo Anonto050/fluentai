@@ -1,1 +1,10 @@
-{}
+{
+  "/(main)/leaderboard/page": "app/(main)/leaderboard/page.js",
+  "/(main)/learn/page": "app/(main)/learn/page.js",
+  "/(main)/profile/page": "app/(main)/profile/page.js",
+  "/(main)/shop/page": "app/(main)/shop/page.js",
+  "/(main)/quests/page": "app/(main)/quests/page.js",
+  "/(main)/courses/page": "app/(main)/courses/page.js",
+  "/vision/page": "app/vision/page.js",
+  "/sign/page": "app/sign/page.js"
+}

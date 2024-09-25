@@ -1,42 +1,64 @@
-"use client";
-
-import { useState, useEffect } from 'react';
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 import { ScenarioItem } from "./ScenarioItem";
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/user-progress";
 import { Header } from "./header";
 import { apiFetch } from '@/lib/apiService';
-import { useAuth } from "@clerk/nextjs";
 
 const ScenarioSelectionPage = async () => {
-  const { userId } = useAuth();
-  const [language, setLanguage] = useState<string>("");
-  const [userProgress, setUserProgress] = useState<any>(null);
-  const [isPro, setIsPro] = useState<boolean>(false);
+  const { userId } = auth();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch user progress and subscription using apiFetch
-        const userProgressData = await apiFetch(`/user-progress/${userId}`);
-        const userSubscriptionData = await apiFetch(`/user-subscriptions/${userId}`);
+  if (!userId) {
+    return (
+      <div className="flex flex-col items-center">
+        <p className="text-red-500">User not authenticated. Please sign in.</p>
+      </div>
+    );
+  }
 
-        setUserProgress(userProgressData);
+  // Fetch user progress and subscription data synchronously
+  let userProgress;
+  let userSubscription;
+  try {
+    userProgress = await apiFetch(`/user-progress/user/${userId}`);
+  } catch (error) {
+    console.error("Error fetching user progress:", error);
+    return (
+      <div className="flex flex-col items-center">
+        <p className="text-red-500">Failed to load user progress. Please try again later.</p>
+      </div>
+    );
+  }
 
-        const course = userProgressData.activeCourse?.title || "Spanish";
-        const language = course.toLowerCase();
-        setLanguage(language);
+  // If no user progress or active course is found, redirect to courses
+  if (!userProgress || !userProgress[0]?.activeCourseId) {
+    return redirect("/courses");
+  }
 
-        const isPro = !!userSubscriptionData?.isActive;
-        setIsPro(isPro);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      }
-    };
+  // Fetch the active course and language
+  let activeCourse;
+  try {
+    activeCourse = await apiFetch(`/courses/${userProgress[0].activeCourseId}`);
+  } catch (error) {
+    console.error("Error fetching active course:", error);
+    return (
+      <div className="flex flex-col items-center">
+        <p className="text-red-500">Failed to load course data. Please try again later.</p>
+      </div>
+    );
+  }
 
-    fetchData();
-  }, [userId]);
+  const language = activeCourse?.title?.toLowerCase() || "spanish";
+
+  try {
+    userSubscription = await apiFetch(`/user-subscriptions/user/${userId}`);
+  } catch (error) {
+    console.error("Error fetching user subscription:", error);
+  }
+
+  const isPro = !!userSubscription?.isActive;
 
   const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
@@ -47,9 +69,9 @@ const ScenarioSelectionPage = async () => {
       <StickyWrapper>
         {userProgress && (
           <UserProgress
-            activeCourse={userProgress.activeCourse}
-            hearts={userProgress.hearts}
-            points={userProgress.points}
+            activeCourse={activeCourse}
+            hearts={userProgress[0].hearts}
+            points={userProgress[0].points}
             hasActiveSubscription={isPro}
           />
         )}

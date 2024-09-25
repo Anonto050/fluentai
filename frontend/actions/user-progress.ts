@@ -22,15 +22,24 @@ export const upsertUserProgress = async (courseId: number) => {
     throw new Error("Course is empty.");
 
   // Fetch existing user progress
-  const existingUserProgress = await apiFetch(`/user-progress/${userId}`);
+  const existingUserProgress = await apiFetch(`/user-progress/user/${userId}`);
+
+  const firstLessonId = course.units[0].lessons[0].id; 
 
   if (existingUserProgress) {
     // Update user progress
-    await apiFetch(`/user-progress/${userId}`, {
+    await apiFetch(`/user-progress/user/${userId}`, {
       method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        ...existingUserProgress,
+        ...existingUserProgress[0],
         activeCourseId: courseId,
+        activeLessonId: existingUserProgress[0].activeLessonId || firstLessonId, // Keep existing or set the first lesson
+        completedChallenges: existingUserProgress[0].completedChallenges || 0,
+        hearts: existingUserProgress[0].hearts || MAX_HEARTS,
+        points: existingUserProgress[0].points || 0,
       }),
     });
 
@@ -40,14 +49,19 @@ export const upsertUserProgress = async (courseId: number) => {
     return;
   }
 
-  // Insert new user progress
+  // Insert new user progress with the provided schema
   await apiFetch(`/user-progress`, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       userId,
       activeCourseId: courseId,
-      hearts: MAX_HEARTS,
-      points: 0,
+      activeLessonId: firstLessonId, // Starting with the first lesson of the first unit
+      completedChallenges: 0, // New user progress starts with 0 challenges completed
+      hearts: MAX_HEARTS, // Default to the max number of hearts
+      points: 0, // Default to 0 points
     }),
   });
 
@@ -56,46 +70,94 @@ export const upsertUserProgress = async (courseId: number) => {
   redirect("/learn");
 };
 
+
 export const reduceHearts = async (challengeId: number) => {
   const { userId } = auth();
 
   if (!userId) throw new Error("Unauthorized.");
 
-  // Fetch current user progress
-  const currentUserProgress = await apiFetch(`/user-progress/${userId}`);
+  // Step 1: Fetch current user progress
+  let currentUserProgress;
+  try {
+    currentUserProgress = await apiFetch(`/user-progress/user/${userId}`);
+    if (!currentUserProgress) throw new Error("User progress not found.");
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error("Error fetching user progress: " + error.message);
+    } else {
+      throw new Error("Error fetching user progress: " + String(error));
+    }
+  }
 
-  // Fetch user subscription status
-  const userSubscription = await apiFetch(`/user-subscriptions/${userId}`);
+  // Step 2: Fetch user subscription status
+  let userSubscription;
+  try {
+    userSubscription = await apiFetch(`/user-subscriptions/user/${userId}`);
+  } catch (error) {
+    console.error("Error fetching user subscription:", error);
+    userSubscription = null;
+  }
 
-  // Fetch challenge details
-  const challenge = await apiFetch(`/challenges/${challengeId}`);
-
-  if (!challenge) throw new Error("Challenge not found.");
+  // Step 3: Fetch challenge details
+  let challenge;
+  try {
+    challenge = await apiFetch(`/challenges/${challengeId}`);
+    if (!challenge) throw new Error("Challenge not found.");
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error("Error fetching challenge details: " + error.message);
+    } else {
+      throw new Error("Error fetching challenge details: " + String(error));
+    }
+  }
 
   const lessonId = challenge.lessonId;
 
-  // Check if the challenge is already practiced
-  const existingChallengeProgress = await apiFetch(
-    `/challenge-progress?userId=${userId}&challengeId=${challengeId}`
-  );
+  // Step 4: Check if the challenge is already practiced
+  let existingChallengeProgress;
+  try {
+    existingChallengeProgress = await apiFetch(
+      `/challenge-progress?userId=${userId}&challengeId=${challengeId}`
+    );
+  } catch (error) {
+    console.error("Error fetching challenge progress:", error);
+    existingChallengeProgress = null; // Handle absence of challenge progress safely
+  }
 
   const isPractice = !!existingChallengeProgress;
 
   if (isPractice) return { error: "practice" };
 
-  if (!currentUserProgress) throw new Error("User progress not found.");
+  // Step 5: Handle errors related to hearts and subscription status
   if (userSubscription?.isActive) return { error: "subscription" };
-  if (currentUserProgress.hearts === 0) return { error: "hearts" };
+  if (currentUserProgress[0].hearts === 0) return { error: "hearts" };
 
-  // Update user progress to reduce hearts
-  await apiFetch(`/user-progress/${userId}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      ...currentUserProgress,
-      hearts: Math.max(currentUserProgress.hearts - 1, 0),
-    }),
-  });
 
+
+  // Step 6: Update user progress to reduce hearts
+  try {
+
+    await apiFetch(`/user-progress/user/${userId}`, {
+      method: "PUT",
+      body: JSON.stringify({
+        ...currentUserProgress[0],
+        hearts: Math.max(currentUserProgress[0].hearts - 1, 0),
+      }),
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error("Error updating user progress: " + error.message);
+    } else {
+      throw new Error("Error updating user progress: " + String(error));
+    }
+  }
+
+  // Revalidate necessary paths
+  revalidatePaths(lessonId);
+};
+
+// Helper function to revalidate paths
+const revalidatePaths = (lessonId: number) => {
   revalidatePath("/shop");
   revalidatePath("/learn");
   revalidatePath("/quests");
@@ -103,27 +165,28 @@ export const reduceHearts = async (challengeId: number) => {
   revalidatePath(`/lesson/${lessonId}`);
 };
 
+
 export const refillHearts = async () => {
   const { userId } = auth();
 
   if (!userId) throw new Error("Unauthorized.");
 
   // Fetch current user progress
-  const currentUserProgress = await apiFetch(`/user-progress/${userId}`);
+  const currentUserProgress = await apiFetch(`/user-progress/user/${userId}`);
 
   if (!currentUserProgress) throw new Error("User progress not found.");
-  if (currentUserProgress.hearts === MAX_HEARTS)
+  if (currentUserProgress[0].hearts === MAX_HEARTS)
     throw new Error("Hearts are already full.");
-  if (currentUserProgress.points < POINTS_TO_REFILL)
+  if (currentUserProgress[0].points < POINTS_TO_REFILL)
     throw new Error("Not enough points.");
 
   // Update user progress to refill hearts
-  await apiFetch(`/user-progress/${userId}`, {
+  await apiFetch(`/user-progress/user/${userId}`, {
     method: 'PUT',
     body: JSON.stringify({
-      ...currentUserProgress,
+      ...currentUserProgress[0],
       hearts: MAX_HEARTS,
-      points: currentUserProgress.points - POINTS_TO_REFILL,
+      points: currentUserProgress[0].points - POINTS_TO_REFILL,
     }),
   });
 

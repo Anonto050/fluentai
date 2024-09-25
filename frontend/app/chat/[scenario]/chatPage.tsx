@@ -14,7 +14,7 @@ import { Voice as VoiceResponse } from "elevenlabs/api";
 import { apiFetch } from "@/lib/apiService";
 
 
-export default function ChatPage({ scenario, userId }: { scenario: string, userId: string }) {
+export default function ChatPage({ scenario, userId, language }: { scenario: string, userId: string, language: string }) {
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isModal, setIsModal] = useState(false);
@@ -26,25 +26,6 @@ export default function ChatPage({ scenario, userId }: { scenario: string, userI
   const [messages, setMessages] = useLocalStorage<Message[]>("chatMessages", []);
   const [loading, setLoading] = useState<boolean>(false);
   const [savedAudio, setSavedAudio] = useState<boolean>(false);
-  const [language, setLanguage] = useState<string>("");
-
-  useEffect(() => {
-    const fetchLanguage = async () => {
-      try {
-        // Fetch user progress using apiFetch
-        const userProgressData = await apiFetch(`/user-progress/${userId}`);
-        const course = userProgressData.activeCourse?.title || "Spanish";
-        const language = course.toLowerCase();
-
-        // Set the language state
-        setLanguage(language);
-      } catch (error) {
-        console.error("Failed to fetch language data:", error);
-      }
-    };
-
-    fetchLanguage();
-  }, []);
 
 
   const getOpenAIResponse = async (chatMessages: Message[]) => {

@@ -10,19 +10,44 @@ import { UserProgress } from "@/components/user-progress";
 import { QUESTS } from "@/constants";
 import { apiFetch } from "@/lib/apiService";
 
-
 const QuestsPage = async () => {
   const { userId } = auth();
-  const userProgressData = apiFetch(`/user-progress/${userId}`);
-  const userSubscriptionData = apiFetch(`/user-subscriptions/${userId}`);
 
+  if (!userId) {
+    return (
+      <div className="flex flex-col items-center">
+        <p className="text-red-500">User not authenticated. Please sign in.</p>
+      </div>
+    );
+  }
 
-  const [userProgress, userSubscription] = await Promise.all([
-    userProgressData,
-    userSubscriptionData,
-  ]);
+  // Fetch user progress
+  let userProgress;
+  try {
+    userProgress = await apiFetch(`/user-progress/user/${userId}`);
+  } catch (error) {
+    console.error("Error fetching user progress:", error);
+    return (
+      <div className="flex flex-col items-center">
+        <p className="text-red-500">Failed to load user progress. Please try again later.</p>
+      </div>
+    );
+  }
 
-  if (!userProgress || !userProgress.activeCourse) redirect("/courses");
+  // If no user progress or active course is found, redirect to courses
+  if (!userProgress || !userProgress[0].activeCourseId) {
+    return redirect("/courses");
+  }
+
+  const activeCourse = await apiFetch(`/courses/${userProgress[0].activeCourseId}`);
+
+  // Fetch user subscription
+  let userSubscription;
+  try {
+    userSubscription = await apiFetch(`/user-subscriptions/user/${userId}`);
+  } catch (error) {
+    console.error("Error fetching user subscription:", error);
+  }
 
   const isPro = !!userSubscription?.isActive;
 
@@ -30,9 +55,9 @@ const QuestsPage = async () => {
     <div className="flex flex-row-reverse gap-[48px] px-6">
       <StickyWrapper>
         <UserProgress
-          activeCourse={userProgress.activeCourse}
-          hearts={userProgress.hearts}
-          points={userProgress.points}
+          activeCourse={activeCourse}
+          hearts={userProgress[0].hearts}
+          points={userProgress[0].points}
           hasActiveSubscription={isPro}
         />
         {!isPro && <Promo />}
@@ -51,7 +76,7 @@ const QuestsPage = async () => {
 
           <ul className="w-full">
             {QUESTS.map((quest) => {
-              const progress = (userProgress.points / quest.value) * 100;
+              const progress = (userProgress[0].points / quest.value) * 100;
 
               return (
                 <div

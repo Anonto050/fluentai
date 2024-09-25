@@ -40,8 +40,9 @@ import {
               <SignedOut>
                 <SignInButton
                   mode="modal"
-                //   afterSignInUrl="/learn"
+                  // afterSignInUrl="/learn"
                 //   afterSignUpUrl="/learn"
+                fallbackRedirectUrl="/check-user"
                 >
                   <Button size="lg" variant="ghost">
                     Login

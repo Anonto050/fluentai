@@ -1,12 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import Image from "next/image";
-import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useAuth } from "@clerk/nextjs";
 import { apiFetch } from "@/lib/apiService";
-import { useAuth } from "@clerk/nextjs";
-
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { Button } from "@/components/ui/button";
@@ -14,8 +12,10 @@ import { UserProgress } from "@/components/user-progress";
 import { Quests } from "@/components/quests";
 import { Promo } from "@/components/promo";
 
-const ProfilePage = async () => {
+const ProfilePage = () => {
   const { user } = useUser();
+  const { userId } = useAuth();
+
   const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
@@ -23,32 +23,88 @@ const ProfilePage = async () => {
     email: user?.emailAddresses[0]?.emailAddress || "",
     imageUrl: "/boy.svg", // Default image URL
     username: user?.username || "",
-    nativeLanguage: "",
+    nativeLanguage: "", // Stores the selected language name
   });
 
-  const { userId } = useAuth();
-  const userProgressData = apiFetch(`/user-progress/${userId}`);
-  const userSubscriptionData = apiFetch(`/user-subscriptions/${userId}`);
+  const [languages, setLanguages] = useState<any[]>([]); // List of languages fetched from API
+  const [userProgress, setUserProgress] = useState<any>(null);
+  const [userSubscription, setUserSubscription] = useState<any>(null);
+  const [activeCourse, setActiveCourse] = useState<any>(null);
+  const [isPro, setIsPro] = useState<boolean>(false);
 
-  const [userProgress, userSubscription] = await Promise.all([
-    userProgressData,
-    userSubscriptionData,
-  ]);
+  // Fetch languages from API
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const languagesData = await apiFetch("/languages"); // Assuming the API endpoint is `/languages`
+        setLanguages(languagesData); // Populate languages with API response
+      } catch (error) {
+        console.error("Error fetching languages:", error);
+      }
+    };
 
-  if (!userProgress || !userProgress.activeCourse) redirect("/courses");
+    fetchLanguages();
+  }, []);
 
-  const isPro = !!userSubscription?.isActive;
+  // Fetch user progress and subscription individually
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!userId) return;
 
-  const handleInputChange = (e : any) => {
+      try {
+        const progress = await apiFetch(`/user-progress/user/${userId}`);
+        setUserProgress(progress);
+
+        if (progress && progress[0]?.activeCourseId) {
+          const course = await apiFetch(`/courses/${progress[0].activeCourseId}`);
+          setActiveCourse(course);
+        } else {
+          redirect("/courses");
+        }
+      } catch (error) {
+        console.error("Error fetching user progress or course:", error);
+        redirect("/courses");
+      }
+
+      try {
+        const subscription = await apiFetch(`/user-subscriptions/user/${userId}`);
+        setUserSubscription(subscription);
+        setIsPro(!!subscription?.isActive);
+      } catch (error) {
+        if (error instanceof Error && error.message.includes("400")) {
+          console.log("No active subscription found, continuing without Pro features.");
+        } else {
+          console.error("Error fetching user subscription:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [userId]);
+
+  // Handle form input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Handle Save with language handling
   const handleSave = async () => {
     try {
-      await apiFetch(`/api/users/${user?.id}`, {
+      // Find the selected language's ID
+      const selectedLanguage = languages.find(lang => lang.name === formData.nativeLanguage);
+
+      const payload = {
+        username: formData.username,
+        email: formData.email,
+        name: `${formData.firstName} ${formData.lastName}`,  // Combine first and last name
+        photoUrl: formData.imageUrl,  // Assuming imageUrl contains the correct URL for the photo
+        nativeLangId: selectedLanguage ? selectedLanguage.id : 1,  // Default to English (id: 1) if not found
+      };
+
+      await apiFetch(`/users/${user?.id}`, {
         method: "PUT",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       alert("Profile updated successfully!");
       setEditing(false);
@@ -58,17 +114,21 @@ const ProfilePage = async () => {
     }
   };
 
+  if (!userProgress || !activeCourse) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <div className="flex flex-row-reverse gap-[48px] px-6">
       <StickyWrapper>
         <UserProgress
-          activeCourse={userProgress.activeCourse}
-          hearts={userProgress.hearts}
-          points={userProgress.points}
+          activeCourse={activeCourse}
+          hearts={userProgress[0].hearts}
+          points={userProgress[0].points}
           hasActiveSubscription={isPro}
         />
         {!isPro && <Promo />}
-        <Quests points={userProgress.points} />
+        <Quests points={userProgress[0].points} />
       </StickyWrapper>
 
       <FeedWrapper>
@@ -80,41 +140,9 @@ const ProfilePage = async () => {
             height={150}
             className="h-[150px] w-[150px] rounded-full border border-gray-300 mt-8 mb-2"
           />
-          {editing && (
-            <div>
-            <div className="relative inline-block">
-            <input
-              type="file"
-              name="imageUrl"
-              accept="image/*"
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  // Uncomment the line below if you handle the file upload and preview logic
-                  // imageUrl: URL.createObjectURL(e.target.files[0]),
-                }))
-              }
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
-            
-            <Button
-                variant="secondary"
-                className="w-full"
-                size="sm"
-              >
-                Choose File
-            </Button>
-            <p className="mt-2 mb-4 text-sm text-gray-500">
-              {formData.imageUrl ? formData.imageUrl : "No file chosen"}
-            </p>  
-
-          </div>
-          
-          </div>
-                    
-          )}
 
           <ul className="w-full max-w-lg">
+            {/* Name fields */}
             <li className="flex w-full items-center gap-x-4 border-t-2 p-4">
               <div className="flex-1 justify-between">
                 <p className="text-base font-bold text-green-500 lg:text-xl">NAME</p>
@@ -137,12 +165,13 @@ const ProfilePage = async () => {
                   </div>
                 ) : (
                   <p className="text-base text-neutral-700 lg:text-xl">
-                    {formData.firstName || ''} {formData.lastName || ''}
+                    {formData.firstName} {formData.lastName}
                   </p>
                 )}
               </div>
             </li>
 
+            {/* Email field */}
             <li className="flex w-full items-center gap-x-4 border-t-2 p-4">
               <div className="flex-1 justify-between">
                 <p className="text-base font-bold text-green-500 lg:text-xl">EMAIL</p>
@@ -155,13 +184,12 @@ const ProfilePage = async () => {
                     className="w-full border-b-2 border-gray-300 p-2"
                   />
                 ) : (
-                  <p className="text-base text-neutral-700 lg:text-xl">
-                    {formData.email || ''}
-                  </p>
+                  <p className="text-base text-neutral-700 lg:text-xl">{formData.email}</p>
                 )}
               </div>
             </li>
 
+            {/* Username field */}
             <li className="flex w-full items-center gap-x-4 border-t-2 p-4">
               <div className="flex-1 justify-between">
                 <p className="text-base font-bold text-green-500 lg:text-xl">USERNAME</p>
@@ -174,27 +202,32 @@ const ProfilePage = async () => {
                     className="w-full border-b-2 border-gray-300 p-2"
                   />
                 ) : (
-                  <p className="text-base text-neutral-700 lg:text-xl">
-                    {formData.username || ''}
-                  </p>
+                  <p className="text-base text-neutral-700 lg:text-xl">{formData.username}</p>
                 )}
               </div>
             </li>
 
+            {/* Native Language Dropdown */}
             <li className="flex w-full items-center gap-x-4 border-t-2 p-4">
               <div className="flex-1 justify-between">
                 <p className="text-base font-bold text-green-500 lg:text-xl">NATIVE LANGUAGE</p>
                 {editing ? (
-                  <input
-                    type="text"
+                  <select
                     name="nativeLanguage"
                     value={formData.nativeLanguage}
                     onChange={handleInputChange}
                     className="w-full border-b-2 border-gray-300 p-2"
-                  />
+                  >
+                    <option value="">Select a language</option>
+                    {languages.map((language) => (
+                      <option key={language.id} value={language.name}>
+                        {language.name}
+                      </option>
+                    ))}
+                  </select>
                 ) : (
                   <p className="text-base text-neutral-700 lg:text-xl">
-                    {formData.nativeLanguage || ''}
+                    {formData.nativeLanguage || "Not specified"}
                   </p>
                 )}
               </div>
@@ -203,7 +236,7 @@ const ProfilePage = async () => {
 
           <div className="mt-6 flex gap-4">
             <Button
-              variant={ "primary"}
+              variant="primary"
               className="w-full"
               size="lg"
               onClick={() => setEditing(!editing)}
@@ -211,12 +244,7 @@ const ProfilePage = async () => {
               {editing ? "Cancel" : "Edit Profile"}
             </Button>
             {editing && (
-              <Button
-                variant="secondary"
-                className="w-full"
-                size="lg"
-                onClick={handleSave}
-              >
+              <Button variant="secondary" className="w-full" size="lg" onClick={handleSave}>
                 Save Changes
               </Button>
             )}

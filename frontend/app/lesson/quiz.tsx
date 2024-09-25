@@ -20,6 +20,7 @@ import { Footer } from "./footer";
 import { Header } from "./header";
 import { QuestionBubble } from "./question-bubble";
 import { ResultCard } from "./result-card";
+import { set } from "zod";
 
 type QuizProps = {
   initialPercentage: number;
@@ -150,6 +151,7 @@ export const Quiz = ({
             setStatus("wrong");
 
             if (!response?.error) setHearts((prev) => Math.max(prev - 1, 0));
+
           })
           .catch(() => toast.error("Something went wrong. Please try again."));
 

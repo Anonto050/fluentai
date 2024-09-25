@@ -12,13 +12,14 @@ import {
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Leva, button, useControls } from "leva";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, use, useEffect, useRef, useState } from "react";
 import { degToRad } from "three/src/math/MathUtils";
 import { BoardSettings } from "./BoardSettings";
 import { MessagesList } from "./MessagesList";
 import { Teacher } from "./Teacher";
 import { TypingBox } from "./TypingBox";
 import { apiFetch } from "@/lib/apiService";
+import language from "react-syntax-highlighter/dist/esm/languages/hljs/1c";
 
 
 const itemPlacement = {
@@ -45,38 +46,23 @@ const itemPlacement = {
 };
 
 
-export const Experience = ({ userId }) => {
+export const Experience = ({ userId, courseName }) => {
   const teacher = useAITeacher((state) => state.teacher);
   const classroom = useAITeacher((state) => state.classroom);
-  const setLanguage = useAITeacher((state) => state.setLanguage);
-  const [courseName, setCourseName] = useState(""); 
-  
+  const setLanguage = useAITeacher((state) => state.setLanguage);  
 
   useEffect(() => {
-    const fetchCourseName = async () => {
-      try {
-        // // Fetch the user progress data
-        // const userProgress = await apiFetch(`/user-progress/${userId}`);
-        
-        // // Extract the course name from the activeCourse title
-        // const courseName = userProgress.activeCourse?.title || 'Spanish';
+    if (courseName) {
+      setLanguage(courseName.toLowerCase());
+    }
+  }, [courseName, setLanguage]);
 
-        const courseName = 'Spanish'; // Hardcoded for now
-        setCourseName(courseName);
-        setLanguage(courseName.toLowerCase());
-
-      } catch (error) {
-        console.error('Failed to fetch course name:', error);
-      }
-    };
-
-    fetchCourseName();
-  }, []);
 
   return (
     <>
       <div className="z-10 fixed bottom-0 left-1/2 transform -translate-x-1/2 max-w-[600px] flex flex-col space-y-6 bg-gradient-to-tr from-slate-300/30 via-gray-400/30 to-slate-600/30 p-4 backdrop-blur-md rounded-xl border-slate-100/30 border">
         <TypingBox courseName={courseName} /> 
+
       </div>
 
       <Leva hidden />

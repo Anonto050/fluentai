@@ -11,20 +11,28 @@ export const createStripeUrl = async () => {
 
   if (!userId || !user) throw new Error("Unauthorized.");
 
-  // Fetch user subscription from the backend
-  const userSubscription = await apiFetch(`/user-subscriptions/${userId}`);
+  // let userSubscription;
 
-  // Redirect user to customer portal if they already have a subscription
-  if (userSubscription && userSubscription.stripeCustomerId) {
-    const stripeSession = await stripe.billingPortal.sessions.create({
-      customer: userSubscription.stripeCustomerId,
-      return_url: returnUrl,
-    });
+  // try {
+  //   // Fetch user subscription from the backend
+  //   userSubscription = await apiFetch(`/user-subscriptions/user/${userId}`);
+  // } catch (error) {
+  //   // Log error or handle it gracefully
+  //   console.error("No active subscription found, proceeding with Stripe checkout:", error);
+  //   userSubscription = null;
+  // }
 
-    return { data: stripeSession.url };
-  }
+  // // If the user has an active subscription, redirect them to the Stripe customer portal
+  // if (userSubscription && userSubscription.stripeCustomerId) {
+  //   const stripeSession = await stripe.billingPortal.sessions.create({
+  //     customer: userSubscription.stripeCustomerId,
+  //     return_url: returnUrl,
+  //   });
 
-  // Create a new Stripe checkout session for subscription
+  //   return { data: stripeSession.url };
+  // }
+
+  // If the user does not have a subscription, create a new Stripe checkout session for subscription
   const stripeSession = await stripe.checkout.sessions.create({
     mode: "subscription",
     payment_method_types: ["card"],

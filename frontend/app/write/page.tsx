@@ -5,7 +5,6 @@ import { useDraw } from '@/hooks/useDraw';
 import { ChromePicker } from 'react-color';
 import axios from 'axios';
 import { getRandomWords } from './randomWords'; 
-
 import { FeedWrapper } from "@/components/feed-wrapper";
 import { StickyWrapper } from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/user-progress";
@@ -16,14 +15,12 @@ import { WordPrompt } from "./WordPrompt";
 import { apiFetch } from '@/lib/apiService';
 import { useAuth } from "@clerk/nextjs";
 
-
-// Define the Question type
 interface Question {
   id: number;
   word: string;
 }
 
-const Page: FC = async () => {
+const Page: FC = () => {
   const { userId } = useAuth();
   const [color, setColor] = useState<string>('#000');
   const [lineWidth, setLineWidth] = useState<number>(5); 
@@ -33,16 +30,9 @@ const Page: FC = async () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [status, setStatus] = useState<"none" | "wrong" | "correct">("none");
   const [language, setLanguage] = useState<string>("");
-
-  const userProgressData = apiFetch(`/user-progress/${userId}`);
-  const userSubscriptionData = apiFetch(`/user-subscriptions/${userId}`);
-
-  const [userProgress, userSubscription] = await Promise.all([
-    userProgressData,
-    userSubscriptionData,
-  ]);
-
-  const isPro = !!userSubscription?.isActive;
+  const [userProgressData, setUserProgressData] = useState<any>(null);
+  const [activeCourse, setActiveCourse] = useState<any>(null);
+  const [isPro, setIsPro] = useState(true); // Set it initially as true for now
 
   const languageCodeMap: { [key: string]: string } = {
     english: "en",
@@ -55,27 +45,39 @@ const Page: FC = async () => {
     portuguese: "pt",
   };
 
-
-  // Fetch questions and language from backend
+  // Fetch user progress and course info using useEffect
   useEffect(() => {
-    const loadLanguageAndQuestions = async () => {
-      try {
-        
-        const course = userProgress.activeCourse?.title || "Spanish";
-        const language = course.toLowerCase();
-        
-        setLanguage(language);
+    const fetchData = async () => {
+      if (!userId) return;
 
-        // Fetch random words based on the fetched language
-        const fetchedQuestions = getRandomWords(language);
-        setQuestions(fetchedQuestions);
+      try {
+        // Fetch user progress
+        const progress = await apiFetch(`/user-progress/user/${userId}`);
+        setUserProgressData(progress);
+
+        if (progress && progress[0]?.activeCourseId) {
+          // Fetch active course based on activeCourseId
+          const course = await apiFetch(`/courses/${progress[0].activeCourseId}`);
+          setActiveCourse(course);
+
+          // Set language based on the course title
+          const courseLanguage = course?.title?.toLowerCase() || "spanish";
+          setLanguage(courseLanguage);
+      
+
+          // Fetch random words based on the language
+          const fetchedQuestions = getRandomWords(courseLanguage as "spanish" | "french" | "german" | "italian" | "japanese" | "portuguese");
+          setQuestions(fetchedQuestions);
+        } else {
+          console.error('No active course found.');
+        }
       } catch (error) {
-        console.error('Failed to fetch language or questions:', error);
+        console.error('Failed to fetch user progress or course data:', error);
       }
     };
 
-    loadLanguageAndQuestions();
-  }, []);
+    fetchData();
+  }, [userId]);
 
   // Extract text from canvas and compare with the current question
   const extractTextFromCanvas = async () => {
@@ -191,16 +193,17 @@ const Page: FC = async () => {
   }
 
   return (
-
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row-reverse gap-[48px] px-4 flex-grow">
         <StickyWrapper>
-        <UserProgress
-          activeCourse={userProgress.activeCourse}
-          hearts={userProgress.hearts}
-          points={userProgress.points}
-          hasActiveSubscription={isPro}
-        />
+        {activeCourse && (
+          <UserProgress
+            activeCourse={activeCourse}
+            hearts={userProgressData[0]?.hearts || 0}
+            points={userProgressData[0]?.points || 0}
+            hasActiveSubscription={isPro}
+          />
+        )}
 
           <WordPrompt 
             word={questions[currentQuestionIndex]?.word || "Loading..."} 
@@ -254,7 +257,6 @@ const Page: FC = async () => {
                   height={650}
                   className='border border-black rounded-md shadow-lg'
               />
-
           </div>
 
           <div className="w-full mt-auto" style={{ marginTop: '-40px' }}>
@@ -266,8 +268,6 @@ const Page: FC = async () => {
           </div>
         </FeedWrapper>
       </div>
-
-      
     </div>
   );
 };

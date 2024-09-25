@@ -66,7 +66,7 @@ const CoursesPage = () => {
       <h1 className="text-2xl font-bold text-neutral-700">Language Courses</h1>
       <List courses={courses} activeCourseId={userProgress?.activeCourseId} />
 
-      <h1 className="text-2xl font-bold text-neutral-700">Special Courses</h1>
+      <h1 className="text-2xl font-bold text-neutral-700 my-4">Special Courses</h1>
       <div className="grid grid-cols-2 gap-4 pt-6 lg:grid-cols-[repeat(auto-fill,minmax(210px,1fr))]">
         {/* Card for the Sign Language course */}
         <Card
