@@ -1,16 +1,20 @@
-# FluentAI Frontend
+# FluentAI
 
-FluentAI is an innovative language learning platform designed to provide immersive and engaging learning experiences. This repository contains the frontend implementation of FluentAI, built using Next.js with TypeScript.
+Fluent AI is an AI-integrated language learning platform that leverages the power of artificial intelligence to provide personalized learning experiences. This repository contains the frontend and backend codebase. 
 
 ## Table of Contents
 
 - [Key Features](#key-features)
 - [Visual Overview](#visual-overview)
 - [Tech Stack](#tech-stack)
-- [Installation](#installation)
+- [Frontend Installation](#frontend-installation)
+- [Backend Installation](#backend-installation)
 - [Usage](#usage)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Deployment](#deployment)
 - [Contributing](#contributing)
 - [License](#license)
+- [Contact](#contact)
 
 ## Key Features
 
@@ -52,11 +56,22 @@ Complete quests to earn XP and enhance your learning experience.
 
 ## Tech Stack
 
-- **Frontend Framework:** Next.js 14
+### Frontend
+- **Framework:** Next.js 14
 - **Programming Language:** TypeScript
 - **Styling:** Tailwind CSS with shadcn/ui library
 
-## Installation
+### Backend
+- **Java**: The primary programming language for backend development.
+- **Spring Boot**: Framework for building production-ready applications quickly.
+- **PostgreSQL**: Managed relational database for data persistence.
+- **Maven**: Build automation tool for Java projects.
+- **Docker**: Containerization for consistent deployment environments.
+- **GitHub Actions**: CI/CD for automated testing, building, and deployment.
+
+
+
+## Frontend Installation
 
 To set up the frontend locally, follow these steps:
 
@@ -77,9 +92,60 @@ To set up the frontend locally, follow these steps:
    ```
    The application will be available at [http://localhost:3000](http://localhost:3000).
 
+## Backend Installation
+
+### Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- Java 17 or higher
+- Maven 3.6.0 or higher
+- Docker
+- Git
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/BRAINIAC2677/fluentai.git
+   cd fluentai/backend
+   ```
+2. **Install dependencies**:
+    ```bash 
+    mvn install
+    ```
+3. **Configure database credentials:**
+    ```
+    SPRING_DATASOURCE_URL=jdbc:postgresql://<your-database-url>:5432/<database-name>
+    SPRING_DATASOURCE_USERNAME=<your-username>
+    SPRING_DATASOURCE_PASSWORD=<your-password>
+    ```
+### Running The Application
+To run the application locally, use the following command:
+
+```
+mvn spring-boot:run
+```
+The application will be accessible at http://localhost:8080
+
+
+
 ## Usage
 
 Once the server is running, you can explore the platform's various features, such as signing up, selecting a language, and engaging with interactive lessons. The sidebar provides easy navigation to learning modules, quests, the shop, and leaderboards.
+
+## CI/CD Pipeline
+This project utilizes GitHub Actions for CI/CD. Upon every commit push to the main branch, the following steps occur automatically:
+
+- **Build:** The backend is built using Maven.
+- **Test:** The project tests are run.
+- **Dockerize:** The application is packaged into a Docker container.
+- **Push to Container Registry:** The Docker image is pushed to the DigitalOcean private container registry.
+The CI/CD pipeline is defined in `.github/workflows/`
+
+## Deployment 
+DigitalOcean App Platform automatically detects new images in the private container registry and redeploys the latest version of the application. This ensures minimal downtime and continuous delivery of updates to the platform.
+
 
 ## Contributing
 
@@ -97,3 +163,9 @@ Please ensure that your code adheres to the project's coding standards and conve
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## Contact
+For questions, suggestions, or feedback, please reach out to:
+
+- Asif Azad - asifazad0178@gmail.com
+- Riad Ahmed Anonto - riadahmedanonto355@gmail.com

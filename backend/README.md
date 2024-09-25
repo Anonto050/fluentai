@@ -14,9 +14,6 @@ Fluent AI is an AI-integrated language learning platform that leverages the powe
 - [API Documentation](#api-documentation)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
 
 ## Technologies Used
 
@@ -72,4 +69,8 @@ This project utilizes GitHub Actions for CI/CD. Upon every commit push to the ma
 - **Dockerize:** The application is packaged into a Docker container.
 - **Push to Container Registry:** The Docker image is pushed to the DigitalOcean private container registry.
 The CI/CD pipeline is defined in `.github/workflows/backend-ci-cd.yaml.`
+
+## Deployment 
+DigitalOcean App Platform automatically detects new images in the private container registry and redeploys the latest version of the application. This ensures minimal downtime and continuous delivery of updates to the platform.
+
 
