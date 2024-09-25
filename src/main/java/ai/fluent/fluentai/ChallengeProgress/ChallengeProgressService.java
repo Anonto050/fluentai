@@ -41,6 +41,17 @@ public class ChallengeProgressService {
         });
     }
 
+    public Optional<ChallengeProgress> updateChallengeProgress(String userId,
+            ChallengeProgressDTO challengeProgressDTO) {
+        List<ChallengeProgress> existingChallengeProgress = challengeProgressRepository.findByUserId(userId);
+        if (existingChallengeProgress.isEmpty()) {
+            return Optional.empty();
+        }
+        ChallengeProgress challengeProgress = existingChallengeProgress.get(0);
+        challengeProgress.setCompleted(challengeProgressDTO.getCompleted());
+        return Optional.of(challengeProgressRepository.save(challengeProgress));
+    }
+
     public void deleteChallengeProgress(Integer id) {
         challengeProgressRepository.deleteById(id);
     }

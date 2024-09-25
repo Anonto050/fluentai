@@ -73,6 +73,28 @@ public class UserProgressService {
         });
     }
 
+    public Optional<UserProgress> updateUserProgress(String userId, UserProgressDTO userProgressDTO) {
+        List<UserProgress> userProgressList = userProgressRepository.findByUserId(userId);
+        if (userProgressList.isEmpty()) {
+            return Optional.empty();
+        }
+        UserProgress userProgress = userProgressList.get(0);
+        Optional<Course> activeCourseOptional = courseRepository.findById(userProgressDTO.getActiveCourseId());
+        Optional<Lesson> activeLessonOptional = lessonRepository.findById(userProgressDTO.getActiveLessonId());
+
+        if (activeCourseOptional.isPresent() && activeLessonOptional.isPresent()) {
+            Course activeCourse = activeCourseOptional.get();
+            Lesson activeLesson = activeLessonOptional.get();
+            userProgress.setActiveCourse(activeCourse);
+            userProgress.setActiveLesson(activeLesson);
+        }
+
+        userProgress.setHearts(userProgressDTO.getHearts());
+        userProgress.setPoints(userProgressDTO.getPoints());
+        userProgress.setCompletedChallenges(userProgressDTO.getCompletedChallenges());
+        return Optional.of(userProgressRepository.save(userProgress));
+    }
+
     public List<UserProgress> getAllUserProgress() {
         return userProgressRepository.findAll();
     }

@@ -33,6 +33,14 @@ public class ChallengeProgressController {
         return updatedChallengeProgress.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/user/{userId}")
+    public ResponseEntity<ChallengeProgress> updateChallengeProgress(@PathVariable String userId,
+            @RequestBody ChallengeProgressDTO challengeProgressDTO) {
+        Optional<ChallengeProgress> updatedChallengeProgress = challengeProgressService.updateChallengeProgress(userId,
+                challengeProgressDTO);
+        return updatedChallengeProgress.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteChallengeProgress(@PathVariable Integer id) {
         challengeProgressService.deleteChallengeProgress(id);

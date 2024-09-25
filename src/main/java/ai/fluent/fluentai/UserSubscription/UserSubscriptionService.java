@@ -54,6 +54,20 @@ public class UserSubscriptionService {
         return Optional.empty();
     }
 
+    public Optional<UserSubscription> updateUserSubscription(String userId, UserSubscriptionDTO userSubscriptionDTO) {
+        List<UserSubscription> existingUserSubscription = userSubscriptionRepository.findByUserId(userId);
+        if (existingUserSubscription.isEmpty()) {
+            return Optional.empty();
+        }
+        UserSubscription userSubscription = existingUserSubscription.get(0);
+        userSubscription.setStripeCustomerId(userSubscriptionDTO.getStripeCustomerId());
+        userSubscription.setStripeSubscriptionId(userSubscriptionDTO.getStripeSubscriptionId());
+        userSubscription.setStripePriceId(userSubscriptionDTO.getStripePriceId());
+        userSubscription.setStripeCurrentPeriodEnd(userSubscriptionDTO.getStripeCurrentPeriodEnd());
+        userSubscription.setIsActive(userSubscriptionDTO.getIsActive());
+        return Optional.of(userSubscriptionRepository.save(userSubscription));
+    }
+
     public List<UserSubscription> getUserSubscriptionByUserId(String userId) {
         return userSubscriptionRepository.findByUserId(userId);
     }

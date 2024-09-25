@@ -66,6 +66,14 @@ public class UserSubscriptionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PutMapping("/user/{userId}")
+    public ResponseEntity<UserSubscription> updateUserSubscription(@PathVariable String userId,
+            @RequestBody UserSubscriptionDTO userSubscriptionDTO) {
+        return userSubscriptionService.updateUserSubscription(userId, userSubscriptionDTO)
+                .map(userSubscription -> ResponseEntity.ok(userSubscription))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public void deleteUserSubscription(@PathVariable int id) {
         userSubscriptionService.deleteUserSubscription(id);

@@ -32,6 +32,14 @@ public class UserProgressController {
                                 .orElse(ResponseEntity.badRequest().build());
         }
 
+        @PutMapping("/user/{userId}")
+        public ResponseEntity<UserProgress> updateUserProgress(@PathVariable String userId,
+                        @RequestBody UserProgressDTO userProgressDTO) {
+                return userProgressService.updateUserProgress(userId, userProgressDTO)
+                                .map(ResponseEntity::ok)
+                                .orElse(ResponseEntity.badRequest().build());
+        }
+
         @GetMapping("/user/{userId}")
         public ResponseEntity<List<UserProgressDTO>> getUserProgressByUserId(@PathVariable String userId) {
                 List<UserProgress> userProgressList = userProgressService.getUserProgressByUserId(userId);
