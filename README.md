@@ -21,10 +21,15 @@ Watch the demo here: [FluentAI Demo](https://www.youtube.com/watch?v=nxrakOBEDCc
 
 ## Key Features
 
-- **`Interactive Learning:`** Comprehensive lessons covering alphabets, vocabulary, and phrases with audio-visual aids.
-- **`AI-Driven Conversations:`** Practice real-life conversations with AI-driven interactions and get instant feedback.
-- **`Progress Tracking:`** Keep track of your learning progress and milestones through detailed profiles.
-- **`Gamification:`** Engage with quests, earn XP, and track your position on the leaderboard.
+- **`Interactive Learning`**: Comprehensive lessons covering alphabets, vocabulary, and phrases with audio-visual aids.
+- **`AI-Driven Conversations`**: Practice real-life conversations with AI-driven interactions and get instant feedback.
+- **`Gamification`**: Engage with quests, earn XP, and track your position on the leaderboard.
+- **`3D Interactive Classroom`**: An immersive 3D classroom feature for interactivity, where users can practice grammar breakdowns, speaking, and listening simultaneously.
+- **`Vision Pal`**: A navigation tool for visually impaired users that captures video and provides spoken guidance to help navigate their surroundings.
+- **`Sign Language Recognition Module`**: A dedicated module for learning sign language using video capture and a custom ML model for recognition.
+- **`Writing and Speaking Practice`**: A module that allows users to practice writing with real-time feedback using OCR technology and engage in speaking practice through AI-based conversations.
+- **`Image and PDF Discussions`**: Interactive learning through the discussion of images and PDFs, helping users learn new words and phrases in context.
+
 
 ## Visual Overview
 
