@@ -61,6 +61,22 @@ Track your ranking among other learners in the community.
 <img src="/frontend/public/project/13.png" alt="Quests Overview" width="600"/>
 Complete quests to earn XP and enhance your learning experience.
 
+### 8. Polychat, Chat with Images & PDFs
+<div style="display: flex; justify-content: space-between;">
+  <div>
+    <img src="/frontend/public/project/14.png" alt="Polychat Interface" width="200"/>
+    <p>Polychat Interface</p>
+  </div>
+  <div>
+    <img src="/frontend/public/project/15.png" alt="Chat with Images" width="200"/>
+    <p>Chat with Images</p>
+  </div>
+  <div>
+    <img src="/frontend/public/project/16.png" alt="Chat with PDFs" width="200"/>
+    <p>Chat with PDFs</p>
+  </div>
+</div>
+
 
 ## Tech Stack
 
