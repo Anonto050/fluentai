@@ -2,6 +2,9 @@
 
 Fluent AI is an AI-integrated language learning platform that leverages the power of artificial intelligence to provide personalized learning experiences. This repository contains the frontend and backend codebase. 
 
+## Demo
+Watch the demo here: [FluentAI Demo](https://www.youtube.com/watch?v=nxrakOBEDCc)
+
 ## Table of Contents
 
 - [Key Features](#key-features)
