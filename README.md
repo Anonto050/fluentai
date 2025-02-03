@@ -64,7 +64,7 @@ Complete quests to earn XP and enhance your learning experience.
 ### 8. Polychat, Chat with Images & PDFs
 <div style="display: flex; justify-content: space-between;">
   <div>
-    <img src="/frontend/public/project/14.png" alt="Polychat Interface" width="200"/>
+    <img src="/frontend/public/project/16.png" alt="Polychat Interface" width="200"/>
     <p>Polychat Interface</p>
   </div>
   <div>
@@ -72,10 +72,26 @@ Complete quests to earn XP and enhance your learning experience.
     <p>Chat with Images</p>
   </div>
   <div>
-    <img src="/frontend/public/project/16.png" alt="Chat with PDFs" width="200"/>
-    <p>Chat with PDFs</p>
+    <img src="/frontend/public/project/14.png" alt="Chat with PDFs" width="200"/>
+    <p>Chat with scenarios</p>
   </div>
 </div>
+
+### 9. Write Practice Interface
+<img src="/frontend/public/project/17.png" alt="Write Practice Interface" width="600"/>
+Practice writing words and get real-time feedback using OCR.
+
+### 10. 3D Classroom Feature
+<img src="/frontend/public/project/18.png" alt="3D Classroom Feature" width="600"/>
+Engage in a dynamic 3D classroom for language learning with interactive lessons.
+
+### 11. Learn Sign Language
+<img src="/frontend/public/project/19.png" alt="Learn Sign Language" width="600"/>
+Sign language learning with real-time gesture recognition and feedback.
+
+### 12. Vision Pal for Navigation Assistance
+<img src="/frontend/public/project/20.png" alt="Vision Pal for Navigation Assistance" width="600"/>
+Navigate your surroundings with Vision Pal, providing spoken guidance for the visually impaired.
 
 
 ## Tech Stack
